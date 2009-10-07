@@ -1,4 +1,5 @@
 0.8.7-CVS: future
+  * Added gettext support. (Sverker Wiberg)
 
 0.8.6: 09/13/09
   * added support for ENE KB3926 revision B/C/D (ENE0100) CIR port

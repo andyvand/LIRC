@@ -1,0 +1,40 @@
+# Swedish translations for lirc package
+# Svenska översättningar för paket lirc.
+# This file is put in the public domain.
+# Sverker Wiberg <sverkerw@sheab.net>, 2009.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lirc 0.8.7-CVS\n"
+"Report-Msgid-Bugs-To: lirc-list@lists.sourceforge.net\n"
+"POT-Creation-Date: 2009-10-05 13:31+0200\n"
+"PO-Revision-Date: 2009-10-05 13:36+0200\n"
+"Last-Translator: Sverker Wiberg <sverkerw@sheab.net>\n"
+"Language-Team: Swedish\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: tools/lirc_client.c:202
+#, c-format
+msgid "%s: could not open socket\n"
+msgstr "%s: kunde inte öppna uttag (socket)\n"
+
+#: tools/lirc_client.c:211
+#, c-format
+msgid "%s: could not connect to socket\n"
+msgstr "%s: kunde inte förbinda uttag (socket connect)\n"
+
+#: tools/ircat.c:61
+#, c-format
+msgid ""
+"Usage: %s [options] <prog>\n"
+"\t -h --help\t\tdisplay usage summary\n"
+"\t -v --version\t\tdisplay version\n"
+"\t -c --config=<file>\tset config file\n"
+msgstr ""
+"Användning: %s [flaggor] <prog>\n"
+"\t -h --help\t\tvisa hjälp\n"
+"\t -v --version\t\tvisa version\n"
+"\t -c --config=<fil>\tvälj konfigurationsfil\n"

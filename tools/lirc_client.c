@@ -1,4 +1,4 @@
-/*      $Id: lirc_client.c,v 5.29 2009/07/08 19:38:22 lirc Exp $      */
+/*      $Id: lirc_client.c,v 5.29.2.1 2009/10/07 17:14:58 lirc Exp $      */
 
 /****************************************************************************
  ** lirc_client.c ***********************************************************
@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <string.h>
 #include <limits.h>
 #include <sys/socket.h>
@@ -28,6 +29,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+#define DEFAULT_TEXT_DOMAIN PACKAGE
+#include "gettext.h"
 
 #include "lirc_client.h"
 
@@ -108,6 +112,47 @@ static int lirc_verbose=0;
 static char *lirc_prog=NULL;
 static char *lirc_buffer=NULL;
 
+/**
+ * Converts ASCII char 'ch' to upper case; ignoring locale
+ * settings. Equivalent to toupper() in the "C" locale.
+ */
+static inline int lirc_toupper(int ch)
+{
+	return ch >= 'a' && ch <= 'z' ? ch - ('a' - 'A') : ch;
+}
+
+/* Helper for lirc_strcasecmp(): Casts 'ch' to unsigned char and then
+   to int. Also, a short name for short lines. */
+static inline int uc(unsigned char ch)
+{
+	return lirc_toupper(ch);
+}
+
+/**
+ * Compares strings 's1' and 's2'; ignoring character case and locale
+ * settings. Equivalent to strcasecmp() in the "C" locale.
+ */
+static int lirc_strcasecmp(const char* s1, const char* s2)
+{
+	int c1;
+	int c2;
+
+	for(; (c1 = uc(*s1)) == (c2 = uc(*s2)); ++s1, ++s2)
+		if(c1 == '\0')
+			return 0;
+
+	return c1 - c2;
+}
+
+/**
+ * Compares strings 's1' and 's2' for equality; ignoring case and
+ * locale settings.
+ */
+static inline bool lirc_strcaseeq(const char* s1, const char* s2)
+{
+	return lirc_strcasecmp(s1, s2) == 0;
+}
+
 static void lirc_printf(char *format_str, ...)
 {
 	va_list ap;  
@@ -130,6 +175,9 @@ int lirc_init(char *prog,int verbose)
 {
 	struct sockaddr_un addr;
 
+	/* Set up gettext */
+	bindtextdomain(PACKAGE, LOCALEDIR);
+
 	/* connect to lircd */
 
 	if(prog==NULL || lirc_prog!=NULL) return(-1);
@@ -146,7 +194,7 @@ int lirc_init(char *prog,int verbose)
 	lirc_lircd=socket(AF_UNIX,SOCK_STREAM,0);
 	if(lirc_lircd==-1)
 	{
-		lirc_printf("%s: could not open socket\n",lirc_prog);
+		lirc_printf(_("%s: could not open socket\n"),lirc_prog);
 		lirc_perror(lirc_prog);
 		free(lirc_prog);
 		lirc_prog=NULL;
@@ -155,7 +203,7 @@ int lirc_init(char *prog,int verbose)
 	if(connect(lirc_lircd,(struct sockaddr *)&addr,sizeof(addr))==-1)
 	{
 		close(lirc_lircd);
-		lirc_printf("%s: could not connect to socket\n",lirc_prog);
+		lirc_printf(_("%s: could not connect to socket\n"),lirc_prog);
 		lirc_perror(lirc_prog);
 		free(lirc_prog);
 		lirc_prog=NULL;
@@ -414,7 +462,7 @@ int lirc_mode(char *token,char *token2,char **mode,
 	struct lirc_config_entry *new_entry;
 	
 	new_entry=*new_config;
-	if(strcasecmp(token,"begin")==0)
+	if(lirc_strcaseeq(token,"begin"))
 	{
 		if(token2==NULL)
 		{
@@ -470,7 +518,7 @@ int lirc_mode(char *token,char *token2,char **mode,
 			}
 		}
 	}
-	else if(strcasecmp(token,"end")==0)
+	else if(lirc_strcaseeq(token,"end"))
 	{
 		if(token2==NULL)
 		{
@@ -486,7 +534,7 @@ int lirc_mode(char *token,char *token2,char **mode,
 					*new_config=NULL;
 					return(-1);
 				}
-				if(strcasecmp(new_entry->prog,lirc_prog)!=0)
+				if(!lirc_strcaseeq(new_entry->prog,lirc_prog))
 				{
 					lirc_freeconfigentries(new_entry);
 					*new_config=NULL;
@@ -521,7 +569,7 @@ int lirc_mode(char *token,char *token2,char **mode,
 
 				if(check!=NULL &&
 				   new_entry->prog!=NULL &&
-				   strcasecmp(new_entry->prog,lirc_prog)==0)
+				   lirc_strcaseeq(new_entry->prog,lirc_prog))
 				{					
 					struct lirc_list *list;
 
@@ -560,7 +608,7 @@ int lirc_mode(char *token,char *token2,char **mode,
 						    name,line);
 					return(-1);
 				}
-				if(strcasecmp(*mode,token2)==0)
+				if(lirc_strcaseeq(*mode,token2))
 				{
 					free(*mode);
 					*mode=NULL;
@@ -599,23 +647,23 @@ unsigned int lirc_flags(char *string)
 	s=strtok(string," \t|");
 	while(s)
 	{
-		if(strcasecmp(s,"once")==0)
+		if(lirc_strcaseeq(s,"once"))
 		{
 			flags|=once;
 		}
-		else if(strcasecmp(s,"quit")==0)
+		else if(lirc_strcaseeq(s,"quit"))
 		{
 			flags|=quit;
 		}
-		else if(strcasecmp(s,"mode")==0)
+		else if(lirc_strcaseeq(s,"mode"))
 		{
 			flags|=mode;
 		}
-		else if(strcasecmp(s,"startup_mode")==0)
+		else if(lirc_strcaseeq(s,"startup_mode"))
 		{
 			flags|=startup_mode;
 		}
-		else if(strcasecmp(s,"toggle_reset")==0)
+		else if(lirc_strcaseeq(s,"toggle_reset"))
 		{
 			flags|=toggle_reset;
 		}
@@ -990,7 +1038,7 @@ static int lirc_readconfig_only_internal(char *file,
 			{
 				/* ignore comment */
 			}
-			else if(strcasecmp(token, "include") == 0)
+			else if(lirc_strcaseeq(token, "include"))
 			{
 				if (open_files >= MAX_INCLUDES)
 				{
@@ -1093,17 +1141,17 @@ static int lirc_readconfig_only_internal(char *file,
 						    lirc_prog);
 					ret=-1;
 				}
-				else if(strcasecmp(token,"prog")==0)
+				else if(lirc_strcaseeq(token,"prog"))
 				{
 					if(new_entry->prog!=NULL) free(new_entry->prog);
 					new_entry->prog=token2;
 				}
-				else if(strcasecmp(token,"remote")==0)
+				else if(lirc_strcaseeq(token,"remote"))
 				{
 					if(remote!=LIRC_ALL)
 						free(remote);
 					
-					if(strcasecmp("*",token2)==0)
+					if(lirc_strcaseeq("*",token2))
 					{
 						remote=LIRC_ALL;
 						free(token2);
@@ -1113,7 +1161,7 @@ static int lirc_readconfig_only_internal(char *file,
 						remote=token2;
 					}
 				}
-				else if(strcasecmp(token,"button")==0)
+				else if(lirc_strcaseeq(token,"button"))
 				{
 					struct lirc_code *code;
 					
@@ -1130,7 +1178,7 @@ static int lirc_readconfig_only_internal(char *file,
 					else
 					{
 						code->remote=remote;
-						if(strcasecmp("*",token2)==0)
+						if(lirc_strcaseeq("*",token2))
 						{
 							code->button=LIRC_ALL;
 							free(token2);
@@ -1162,7 +1210,7 @@ static int lirc_readconfig_only_internal(char *file,
 						}
 					}
 				}
-				else if(strcasecmp(token,"delay")==0)
+				else if(lirc_strcaseeq(token,"delay"))
 				{
 					char *end;
 
@@ -1180,7 +1228,7 @@ static int lirc_readconfig_only_internal(char *file,
 					}
 					free(token2);
 				}
-				else if(strcasecmp(token,"repeat")==0)
+				else if(lirc_strcaseeq(token,"repeat"))
 				{
 					char *end;
 
@@ -1198,7 +1246,7 @@ static int lirc_readconfig_only_internal(char *file,
 					}
 					free(token2);
 				}
-				else if(strcasecmp(token,"config")==0)
+				else if(lirc_strcaseeq(token,"config"))
 				{
 					struct lirc_list *new_list;
 
@@ -1229,12 +1277,12 @@ static int lirc_readconfig_only_internal(char *file,
 						new_entry->next_config=new_list;
 					}
 				}
-				else if(strcasecmp(token,"mode")==0)
+				else if(lirc_strcaseeq(token,"mode"))
 				{
 					if(new_entry->change_mode!=NULL) free(new_entry->change_mode);
 					new_entry->change_mode=token2;
 				}
-				else if(strcasecmp(token,"flags")==0)
+				else if(lirc_strcaseeq(token,"flags"))
 				{
 					new_entry->flags=lirc_flags(token2);
 					free(token2);
@@ -1350,7 +1398,7 @@ static char *lirc_startupmode(struct lirc_config_entry *first)
 		scan=first;
 		while(scan!=NULL)
 		{
-			if(scan->mode!=NULL && strcasecmp(lirc_prog,scan->mode)==0)
+			if(scan->mode!=NULL && lirc_strcaseeq(lirc_prog,scan->mode))
 			{
 				startupmode=lirc_prog;
 				break;
@@ -1364,7 +1412,7 @@ static char *lirc_startupmode(struct lirc_config_entry *first)
 	while(scan!=NULL)
 	{
 		if(scan->change_mode!=NULL && scan->flags&once &&
-		   strcasecmp(startupmode,scan->change_mode)==0)
+		   lirc_strcaseeq(startupmode,scan->change_mode))
 		{
 			scan->flags|=ecno;
 		}
@@ -1440,7 +1488,7 @@ static void lirc_clearmode(struct lirc_config *config)
 	{
 		if(scan->change_mode!=NULL)
 		{
-			if(strcasecmp(scan->change_mode,config->current_mode)==0)
+			if(lirc_strcaseeq(scan->change_mode,config->current_mode))
 			{
 				scan->flags&=~ecno;
 			}
@@ -1479,7 +1527,7 @@ static char *lirc_execute(struct lirc_config *config,
 	}
 	if(scan->next_config!=NULL &&
 	   scan->prog!=NULL &&
-	   (lirc_prog == NULL || strcasecmp(scan->prog,lirc_prog)==0) &&
+	   (lirc_prog == NULL || lirc_strcaseeq(scan->prog,lirc_prog)) &&
 	   do_once==1)
 	{
 		s=scan->next_config->string;
@@ -1506,10 +1554,10 @@ static int lirc_iscode(struct lirc_config_entry *scan, char *remote,
 	
 	/* remote/button match? */
 	if(scan->next_code->remote==LIRC_ALL || 
-	   strcasecmp(scan->next_code->remote,remote)==0)
+	   lirc_strcaseeq(scan->next_code->remote,remote))
 	{
 		if(scan->next_code->button==LIRC_ALL || 
-		   strcasecmp(scan->next_code->button,button)==0)
+		   lirc_strcaseeq(scan->next_code->button,button))
 		{
 			int iscode=0;
 			/* button sequence? */
@@ -1556,10 +1604,10 @@ static int lirc_iscode(struct lirc_config_entry *scan, char *remote,
                 while(next!=scan->next_code)
                 {
                         if(prev->remote==LIRC_ALL ||
-                           strcasecmp(prev->remote,next->remote)==0)
+                           lirc_strcaseeq(prev->remote,next->remote))
                         {
                                 if(prev->button==LIRC_ALL ||
-                                   strcasecmp(prev->button,next->button)==0)
+                                   lirc_strcaseeq(prev->button,next->button))
                                 {
                                         prev=prev->next;
                                         next=next->next;
@@ -1577,10 +1625,10 @@ static int lirc_iscode(struct lirc_config_entry *scan, char *remote,
                 if(flag==1)
                 {
                         if(prev->remote==LIRC_ALL ||
-                           strcasecmp(prev->remote,remote)==0)
+                           lirc_strcaseeq(prev->remote,remote))
                         {
                                 if(prev->button==LIRC_ALL ||
-                                   strcasecmp(prev->button,button)==0)
+                                   lirc_strcaseeq(prev->button,button))
                                 {
                                         if(rep==0)
                                         {
@@ -1694,7 +1742,7 @@ static int lirc_code2char_internal(struct lirc_config *config,char *code,
 			   (scan->mode==NULL ||
 			    (scan->mode!=NULL && 
 			     config->current_mode!=NULL &&
-			     strcasecmp(scan->mode,config->current_mode)==0)) &&
+			     lirc_strcaseeq(scan->mode,config->current_mode))) &&
 			   quit_happened==0
 			   )
 			{
@@ -2009,7 +2057,7 @@ int lirc_send_command(int sockfd, const char *command, char *buf, size_t *buf_le
 		switch(state)
 		{
 		case P_BEGIN:
-			if(strcasecmp(string,"BEGIN")!=0)
+			if(!lirc_strcaseeq(string,"BEGIN"))
 			{
 				continue;
 			}
@@ -2025,16 +2073,16 @@ int lirc_send_command(int sockfd, const char *command, char *buf, size_t *buf_le
 			state=P_STATUS;
 			break;
 		case P_STATUS:
-			if(strcasecmp(string,"SUCCESS")==0)
+			if(lirc_strcaseeq(string,"SUCCESS"))
 			{
 				status=LIRC_RET_SUCCESS;
 			}
-			else if(strcasecmp(string,"END")==0)
+			else if(lirc_strcaseeq(string,"END"))
 			{
 				status=LIRC_RET_SUCCESS;
 				goto good_packet;
 			}
-			else if(strcasecmp(string,"ERROR")==0)
+			else if(lirc_strcaseeq(string,"ERROR"))
 			{
 				lirc_printf("%s: command failed: %s",
 					    lirc_prog, command);
@@ -2047,11 +2095,11 @@ int lirc_send_command(int sockfd, const char *command, char *buf, size_t *buf_le
 			state=P_DATA;
 			break;
 		case P_DATA:
-			if(strcasecmp(string,"END")==0)
+			if(lirc_strcaseeq(string,"END"))
 			{
 				goto good_packet;
 			}
-			else if(strcasecmp(string,"DATA")==0)
+			else if(lirc_strcaseeq(string,"DATA"))
 			{
 				state=P_N;
 				break;
@@ -2084,7 +2132,7 @@ int lirc_send_command(int sockfd, const char *command, char *buf, size_t *buf_le
 			if(n==data_n) state=P_END;
 			break;
 		case P_END:
-			if(strcasecmp(string,"END")==0)
+			if(lirc_strcaseeq(string,"END"))
 			{
 				goto good_packet;
 			}

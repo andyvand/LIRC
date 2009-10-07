@@ -1,4 +1,4 @@
-dnl $Id: configure.ac,v 1.32 2009/09/13 10:49:09 lirc Exp $
+dnl $Id: configure.ac,v 1.32.2.1 2009/10/07 17:14:58 lirc Exp $
 
 dnl Process this file with autoconf to produce a configure script.
 dnl configure.ac, (c)1999 Tom Wheeley <tw104@york.ac.uk>
@@ -13,6 +13,7 @@ CFLAGS="${CFLAGS--O2 -g -Wall}"
 
 dnl Checks for programs.
 AC_PROG_CC
+AM_GNU_GETTEXT([external])
 AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -1770,6 +1771,7 @@ dnl SHELL=/bin/sh AC_SUBST(SHELL)
 
 dnl write these decisions out to the Makefiles
 AC_CONFIG_FILES([
+  po/Makefile.in
   Makefile
   drivers/Makefile
   drivers/lirc_atiusb/Makefile
@@ -1795,6 +1797,7 @@ AC_CONFIG_FILES([
   doc/Makefile
   doc/man/Makefile
 ])
+dnl AC_CONFIG_COMMANDS([update-gmo], [cd po && make update-gmo])
 AC_OUTPUT
 
 echo

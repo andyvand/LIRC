@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 5.12 2009/07/07 20:44:44 lirc Exp $
+## $Id: Makefile.am,v 5.12.2.1 2009/10/07 17:14:57 lirc Exp $
 
 ## Process this file with automake to produce Makefile.in 
 ## Makefile.am, (c)1999 Tom Wheeley <tw104@york.ac.uk>
@@ -6,10 +6,10 @@
 ## we need version 1.5 of automake for DIST_SUBDIRS to work and dist-bzip2.
 AUTOMAKE_OPTIONS = 1.5 check-news dist-bzip2
 
-EXTRA_DIST =  setup.sh setup-driver.sh setup.data data2setup.sh ANNOUNCE TODO
+EXTRA_DIST = config.rpath   setup.sh setup-driver.sh setup.data data2setup.sh ANNOUNCE TODO ABOUT-NLS gettext.h
 
 ## daemons/ and tools/ should appear before doc/ for help2man to work.
-SUBDIRS = drivers daemons tools doc
+SUBDIRS = po drivers daemons tools doc
 
 ## From automake documentation:
 ## Note that EXTRA_DIST can only handle files in the current
@@ -34,6 +34,9 @@ distcheck-light:
 
 setup-driver.sh: data2setup.sh setup.data
 	./data2setup.sh > setup-driver.sh
+
+all-local:
+	$(MAKE) -C po update-gmo
 
 dist-hook:
 	(cd $(srcdir)/contrib/hal/ && ./gen-hal-fdi.pl)

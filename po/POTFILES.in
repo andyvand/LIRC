@@ -1,0 +1,6 @@
+# List of source files which contain translatable strings.
+
+tools/lirc_client.c
+
+tools/ircat.c
+

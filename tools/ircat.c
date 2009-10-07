@@ -44,22 +44,31 @@
 #include <getopt.h>
 #include "lirc_client.h"
 
+#include <locale.h>
+#include "gettext.h"
+
 #define PROG_NAME "ircat"
 #define PROG_VERSION PROG_NAME " " VERSION
 
 
 void print_usage (char *prog_name)
 {
-	printf("Usage: %s [options] <prog>\n", prog_name);
-	printf("\t -h --help\t\tdisplay usage summary\n");
-	printf("\t -v --version\t\tdisplay version\n");
-	printf("\t -c --config=<file>\tset config file\n");
+	printf(_("Usage: %s [options] <prog>\n"
+		 "\t -h --help\t\tdisplay usage summary\n"
+		 "\t -v --version\t\tdisplay version\n"
+		 "\t -c --config=<file>\tset config file\n"),
+	       prog_name);
+
 }
 
 int main(int argc, char *argv[])
 {
 	struct lirc_config *config;
 	char *config_file = NULL;
+
+	setlocale(LC_ALL, "");
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
 
 	while (1) {
 		int c;

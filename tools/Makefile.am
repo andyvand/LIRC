@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 5.19 2008/07/03 21:33:53 lirc Exp $
+## $Id: Makefile.am,v 5.19.4.1 2009/10/07 17:14:58 lirc Exp $
 
 ## Process this file with automake to produce Makefile.in 
 
@@ -9,7 +9,8 @@ bin_PROGRAMS = irw irpty irexec ircat mode2 irsend \
 	lircrcd \
 	@vga_progs@ @x_progs@
 
-AM_CPPFLAGS = @X_CFLAGS@
+AM_CPPFLAGS = -DLOCALEDIR=\"$(localedir)\" @X_CFLAGS@
+LDADD = @LTLIBINTL@
 
 ## simple programs
 irw_SOURCES = irw.c
