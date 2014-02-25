@@ -8,7 +8,7 @@
     thanks to Timo Boettcher for providing hardware)
   * more error-checking for NULL irctl in various lirc_dev paths
   * add support for Monueal Moncaso IR to mplay driver (123justme)
-  * add another PNP device ID to lirc_it87 (Jochen Kühner)
+  * add another PNP device ID to lirc_it87 (Jochen K0hner)
   * drop references to static chardev major number 61, we use dynamic
   * resync lirc_dev with what was merged in the kernel
   * reformat code using indent to look more like Linux kernel code
@@ -120,7 +120,7 @@
   * the special driver option "any" has been replaced by two new
     options: "all" and "userspace"
   * bug fixes when transmitting codes with small gap values:
-    NO_HEAD_REP and RC5 work correctly again 
+    NO_HEAD_REP and RC5 work correctly again
 
 0.7.2: 08/14/05
   * added support for new version of Windows Media Center Remotes
@@ -145,7 +145,7 @@
   * added support for Streamzap PC remote
   * added support for Soundgraph iMON MultiMedian IR/VFD (Venky Raju)
   * added support for X10 MouseRemote RF Receiver (Geoffrey Hausheer)
-  * added support for Hauppauge PVR150 (Per Jönsson)
+  * added support for Hauppauge PVR150 (Per J0nsson)
   * 2.2.x kernels are no longer supported
   * added support for AOpen XC Cube EA65, EA65-II (Max Krasnyansky)
   * added IGNORE directive to lircmd (Steven Mueller)
@@ -160,7 +160,7 @@
   * replaced get_key interface with more flexible add_to_buf method
   * added support for Windows Media Center Remotes (Dan Conti)
   * fine-tuning of lirc_sir driver available with threshold parameter:
-    the default has been changed from 2 to 3 which should generate 
+    the default has been changed from 2 to 3 which should generate
     correct signal values for more remotes
   * added support for alternative IR receiver circuit connected to
     soundcard input using ALSA (Andrew Zabolotny)
@@ -202,7 +202,7 @@
 
 0.6.5: 01/26/02
   * added support for IntelliMouse to lircmd
-  * added support for ITE IT8712/IT8705 CIR port (Hans-Günter Lütke Uphues)
+  * added support for ITE IT8712/IT8705 CIR port (Hans-Ginter Litke Uphues)
   * added support for Prolink PV-BT878P+9B card (Arkadiusz Miskiewicz)
   * added support for Hauppauge DVB-s card
   * more transmit bug fixes
@@ -211,7 +211,7 @@
   * fixed bug in home-brew transmitter code (Steve Davies)
   * fixed bug in Irdeo transmit code
   * added support for FlyVideo II TV card (Alexios Chouchoulas)
-  * added support for Compaq iPAQ 
+  * added support for Compaq iPAQ
   * added support for FlyVideo 98/FM TV card
   * added support for Winfast TV2000 (Juan Toledo)
   * added support for BT878 version of BestBuy Easy TV card (Miguel Angel)
@@ -352,7 +352,7 @@
   * documentation-update
   * fixed (I hope) problem with irq_handler in the serial port device driver
   * changes to the serial port device driver to support the Animax remote
-    control correctly 
+    control correctly
   * added xmode2 and irxevent-0.4.2 to the tools directory (thanks to
     Heinrich Langos)
 
@@ -376,8 +376,8 @@
   * This version has been done by Pablo d'Angelo and me (Chistoph)
   * (changed by pablo) changed the config-files format for every application
     in the apps directory.
-    You can specify the remote within the config files. '*' are allowed as 
-    wildcards for button and remote now. (beware: the config file is parsed 
+    You can specify the remote within the config files. '*' are allowed as
+    wildcards for button and remote now. (beware: the config file is parsed
     from bottom to top, in case you use button='*')
   * added ACTIVATE direcitve to lircmd config file
     There is an example config file in contrib/lircmd.conf now.
@@ -423,7 +423,7 @@
   * the data structures for remotes have changed,
     adding new remotes should be much easier now
     at this time there is only support for my remote control
-    further remote controls will be added if they are confirmed to work 
+    further remote controls will be added if they are confirmed to work
     with the new header files
   * by default the daemon writes into a logfile in /var/log/lircd
   * added irxevent for sending events to X application
@@ -461,7 +461,7 @@
 
 
 0.2: 05/15/96
-  * remote recognition more flexible 
+  * remote recognition more flexible
     for most remotes you only need to fill in a data table now
     see ir_remote.h and ir_remote.cc
 
