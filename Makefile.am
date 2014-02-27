@@ -31,7 +31,7 @@ dist_lirc_conf_DATA = lircd.conf lirc_options.conf lircmd.conf
 
 ## !!! BIG WARNING: this needs to be tweaked a bit more !!! ##
 
-DISTCHECK_FLAGS = --with-driver=all --enable-sandboxed
+DISTCHECK_FLAGS = --enable-sandboxed
 DISTCHECK_CONFIGURE_FLAGS = ${DISTCHECK_FLAGS}
 DISTCHECK_LIGHT_FLAGS = --with-driver=none --enable-sandboxed
 
