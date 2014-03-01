@@ -8,11 +8,15 @@ noinst_PROGRAMS         = man2html
 nodist_man_MANS         =
 generated_html          =
 
+if BUILD_XTOOLS
 nodist_man_MANS         += man/xmode2.1 man/irxevent.1
 generated_html          += html/xmode2.html html/irxevent.html
+endif
 
+if BUILD_SMODE2
 nodist_man_MANS         += man/smode2.1
 generated_html          += html/smode2.html
+endif
 
 docdir                  = @datadir@/doc/@PACKAGE@
 dist_doc_DATA           = lirc.css irxevent.keys
