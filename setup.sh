@@ -1,7 +1,5 @@
 #! /bin/sh
-
 LIRC_VERSION="0.9.1-git"
-
 #############################################################################
 ## Default Values
 COM1_PORT=0x3f8
@@ -18,7 +16,6 @@ LPT3_PORT=0x3bc
 LPT1_IRQ=7
 LPT2_IRQ=5
 LPT3_IRQ=none
-
 LIRC_DRIVER="serial"
 SELECTED_DRIVER=""
 DRIVER_PARAMETER="com1"
@@ -33,7 +30,6 @@ NO_DAEMONIZE="off"
 NO_LONG_CODES="off"
 DYNCODES="off"
 USE_SYSLOG="off"
-
 #############################################################################
 ## Variables
 BACKTITLE="LIRC $LIRC_VERSION Configuration"
@@ -41,7 +37,6 @@ TEMP=".setup.tmp"
 CONFIG=".setup.config"
 START="configure.sh"
 CONFIGURE=no
-
 MAIN_MENU_TEXT="Welcome to the LIRC Configuration Menu. Here you"
 MAIN_MENU_TEXT="$MAIN_MENU_TEXT can configure the driver and some compile-time"
 MAIN_MENU_TEXT="$MAIN_MENU_TEXT settings for LIRC applications."
@@ -51,7 +46,6 @@ SET_PORT_TEXT="Either choose a predefined I/O base address/IRQ combination, or e
 SET_PORT_TEXT="$SET_PORT_TEXT Hint: use <Space> to choose and <Enter> to proceed"
 SET_TTY_TEXT="Choose the tty where your hardware is available."
 GET_PORT_TEXT="Enter the I/O base address followed with a space and the IRQ (none for no IRQ)"
-
 #############################################################################
 ## Functions
 GetSelectedDriver ()
@@ -59,7 +53,6 @@ GetSelectedDriver ()
     COM1="off"; COM2="off"; COM3="off"; COM4="off"
     LPT1="off"; LPT2="off"; LPT3="off"; USER="off"
     IRTTY="none"
-
     if   test "$DRIVER_PARAMETER" = "btty"; then IRTTY="/dev/rfcomm0"; LIRC_PORT="none"; LIRC_IRQ="none"
     elif test "$DRIVER_PARAMETER" = "ttyUSB1"; then COM1="on"; IRTTY="/dev/ttyUSB0"; LIRC_PORT="none"; LIRC_IRQ="none"
     elif test "$DRIVER_PARAMETER" = "ttyUSB2"; then COM2="on"; IRTTY="/dev/ttyUSB1"; LIRC_PORT="none"; LIRC_IRQ="none"
@@ -80,15 +73,11 @@ GetSelectedDriver ()
     elif test "$DRIVER_PARAMETER" = "void"; then LIRC_PORT="";LIRC_IRQ=""
     elif test "$DRIVER_PARAMETER" = "user"; then USER="on"
     fi
-
     SELECTED_DRIVER="driver:$LIRC_DRIVER"
     if test "$LIRC_PORT" != "none" -a "$LIRC_PORT" != ""; then SELECTED_DRIVER="$SELECTED_DRIVER io:$LIRC_PORT"; fi
     if test "$LIRC_IRQ"  != "none" -a "$LIRC_IRQ" != ""; then SELECTED_DRIVER="$SELECTED_DRIVER irq:$LIRC_IRQ"; fi
     if test "$IRTTY" != "none" -a "$IRTTY" != ""; then SELECTED_DRIVER="$SELECTED_DRIVER tty:$IRTTY"; fi
     }
-
-
-
 GetPortAndIrq ()
     {
     dialog --clear --backtitle "$BACKTITLE" \
@@ -105,8 +94,6 @@ GetPortAndIrq ()
         return 1;
     fi
     }
-
-
 SetPortAndIrq ()
     {
     if test "$DRIVER_PARAM_TYPE" = "com"; then
@@ -210,9 +197,6 @@ SetPortAndIrq ()
     fi
     return 0;
     }
-
-
-
 DriverOptions ()
     {
     if   test "$LIRC_DRIVER" = "serial"; then
@@ -262,7 +246,6 @@ DriverOptions ()
     fi
     return 0;
     }
-
 ConfigDriver ()
     {
     . ./setup-driver.sh
@@ -274,9 +257,6 @@ ConfigDriver ()
         fi
     fi
     }
-
-
-
 ConfigSoftware ()
     {
     dialog --clear --backtitle "$BACKTITLE" \
@@ -288,7 +268,6 @@ ConfigSoftware ()
              4 "Disable long codes" $NO_LONG_CODES \
              5 "Use syslogd instead of own log-file" $USE_SYSLOG \
              6 "Enable dynamic codes" $DYNCODES 2>$TEMP
-
     if test "$?" = "0"; then
         {
         set -- `cat $TEMP`
@@ -308,9 +287,6 @@ ConfigSoftware ()
         }
     fi
     }
-
-
-
 SaveConfig ()
     {
     echo "LIRC_DRIVER=$LIRC_DRIVER" >$CONFIG
@@ -330,7 +306,6 @@ SaveConfig ()
     echo "USE_SYSLOG=$USE_SYSLOG" >>$CONFIG
     echo "DYNCODES=$DYNCODES" >>$CONFIG
     chmod 666 $CONFIG
-
     echo '#! /bin/sh' >$START
     echo >>$START
     echo "./configure \\" >>$START
@@ -363,18 +338,15 @@ SaveConfig ()
     echo "--with-irq=$LIRC_IRQ \\" >>$START
     echo "\"\$@\"" >>$START
     chmod 755 $START
-
     MESSAGE="Configuration: $CONFIG, executable shell script: $START"
     EXIT="yes"
     }
-
 #############################################################################
 ## Main Program
 if ! which dialog >/dev/null; then
     echo "dialog not found!"
     exit 1
 fi
-
 if test -f $CONFIG; then
     {
     echo "Loading saved configuration from $CONFIG"
@@ -398,7 +370,6 @@ while test "$EXIT" != "yes"; do
              3 "Save configuration & run configure" \
              4 "Save configuration & exit" \
              5 "Exit WITHOUT doing anything" 2>$TEMP
-
     if test "$?" != "0"; then
         {
         MESSAGE="Configuration cancelled!"
@@ -441,4 +412,4 @@ if test "$CONFIGURE" = "yes"; then
     }
 fi
 ## EOF ######################################################################
-
+fi
