@@ -6,32 +6,13 @@ HEURISTIC=`mktemp`
 TOP_SRCDIR=${top_srcdir:-..}
 SRCDIR=${srcdir:-.}
 HTML_SOURCE=${SRCDIR}/html-source
+CONFIGDIR=$TOP_SRCDIR/configs
 
 SETUP_DATA="${TOP_SRCDIR}/setup.data"
 . ${TOP_SRCDIR}/setup-functions.sh
 
-write_heuristic="no"
-cat ${TOP_SRCDIR}/configure.ac | while read REPLY; do
-    if echo $REPLY|grep "START HARDWARE HEURISTIC" >/dev/null; then
-        write_heuristic="yes"
-        continue;
-    fi
-    if echo $REPLY|grep "END HARDWARE HEURISTIC" >/dev/null; then
-        write_heuristic="no"
-    fi
-    if test "${write_heuristic}" = "yes"; then
-        if echo $REPLY|grep "AC_DEFINE">/dev/null; then
-            continue;
-        fi
-        if echo $REPLY|grep "^echo">/dev/null; then
-            continue;
-        fi
-        if echo $REPLY|grep "exit 1">/dev/null; then
-            continue;
-        fi
-        echo $REPLY >>${HEURISTIC}
-    fi
-done
+rm -f $HEURISTIC
+cat $CONFIGDIR/*.conf  > ${HEURISTIC}
 
 cat << HWDB_HEADER > "${HWDB}"
 # LIRC - Hardware DataBase
