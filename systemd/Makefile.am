@@ -10,9 +10,6 @@ ACLOCAL_AMFLAGS             = -I m4
 UNITFILES                   = lircd.socket lircd.service lircmd.service
 live_systemddir             = $(DESTDIR)/usr/lib/systemd/system
 
-sysconfigdir                = /etc/sysconfig
-dist_sysconfig_DATA         = lirc.sysconfig
-
 systemddir                  = $(prefix)/lib/systemd/system
 dist_systemd_DATA           = $(UNITFILES)
 

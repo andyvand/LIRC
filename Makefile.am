@@ -15,9 +15,9 @@ endif
 
 SUBDIRS = drivers daemons tools doc $(SYSTEMD_DIR)
 
-lirc_confdir        = $(sysconfdir)/lirc
-dist_lirc_conf_DATA = lirc_options.conf
 
+lirc_confdir        = $(sysconfdir)/lirc
+dist_lirc_conf_DATA = lircd.conf lirc_options.conf lircmd.conf
 
 ## From automake documentation:
 ## Note that EXTRA_DIST can only handle files in the current
