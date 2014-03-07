@@ -146,6 +146,7 @@ hw_menu_entry: @hw-usb
         usb_uirt_raw: "USB-UIRT"
         mplay: "VLSystem MPlay Blast"
         mplay: "VLSystem MPlay Mini"
+        zotac: "Zotac USB IR Receiver"
 
 param_type: \
         act200l \
@@ -260,7 +261,8 @@ param_type: \
         ttusbir \
         tvbox \
         udp \
-        wpc8769l
+        wpc8769l \
+        zotac
         none:
 
 default_param: \
@@ -331,7 +333,8 @@ default_param: \
         ttusbir \
         tvbox \
         udp \
-        wpc8769l
+        wpc8769l \
+        zotac
         none:
 
 default_param: \
