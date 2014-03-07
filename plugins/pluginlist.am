@@ -62,3 +62,6 @@ hw_udp_la_SOURCES                = hw_udp.c
 plugin_LTLIBRARIES              += hw_usbx.la
 hw_usbx_la_SOURCES               = hw_usbx.c hw_usbx.h
 
+plugin_LTLIBRARIES              += hw_zotac.la
+hw_zotac_la_SOURCES              = hw_zotac.c
+
