@@ -142,6 +142,9 @@ struct hardware hw_accent = {
 	"accent"
 };
 
+struct hardware* hardwares[] = { &hw_accent, (struct hardware*) NULL};
+
+
 //-------------------------------------------------------------------------
 // This function is called by the LIRC daemon during the transform of a
 // received code into an lirc event.

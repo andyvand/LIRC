@@ -164,3 +164,5 @@ struct hardware hw_udp = {
 	udp_readdata,		/* readdata */
 	"udp"
 };
+
+struct hardware* hardwares[] = { &hw_udp, (struct hardware*)NULL };

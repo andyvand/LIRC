@@ -66,6 +66,8 @@ struct hardware hw_irlink = {
 	"irlink"
 };
 
+struct hardware* hardwares[] = { &hw_irlink, (struct hardware*)NULL };
+
 typedef enum {
 	BLOCK,
 	NON_BLOCK

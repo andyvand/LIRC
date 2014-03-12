@@ -113,6 +113,9 @@ struct hardware hw_usb_uirt_raw = {
 	"usb_uirt_raw"
 };
 
+
+struct hardware* hardwares[] = { &hw_usb_uirt_raw, &hw_uirt2_raw, (struct hardware*)NULL };
+
 /*
  * queue
  */

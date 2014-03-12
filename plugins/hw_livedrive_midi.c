@@ -81,3 +81,5 @@ struct hardware hw_livedrive_midi = {
 	NULL,
 	"livedrive_midi"
 };
+
+struct hardware* hardwares[] = { &hw_livedrive_midi, (struct hardware*)NULL };

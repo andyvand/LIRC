@@ -82,6 +82,9 @@ struct hardware hw_pinsys = {
 	"pinsys"
 };
 
+struct hardware* hardwares[] = { &hw_pinsys, (struct hardware*)NULL };
+
+
 /**** start of autodetect code ***************************/
 int is_it_is_it_huh(int port)
 {
