@@ -1,34 +1,31 @@
 ## Process this file with automake to produce Makefile.in
 ACLOCAL_AMFLAGS             = -I m4
 
-AM_CPPFLAGS = -I$(top_srcdir) -I@kerneldir@
+AM_CPPFLAGS = -I@kerneldir@ -I$(top_srcdir) -I../lib
+AM_LDFLAGS  = -L../lib -llirc -lpthread
 
 
 sbin_PROGRAMS = lircd lircmd
 
 lircd_SOURCES = lircd.c lircd.h
-lircd_LDADD = -L../lib -llirc -lpthread @hw_module_libs@
 
 lircmd_SOURCES = lircmd.c
-lircmd_LDADD = -L../lib -llirc -lpthread @hw_module_libs@
 
 bin_PROGRAMS = irrecord
 
 irrecord_SOURCES = irrecord.c
-irrecord_LDADD = -L../lib -llirc -lpthread @hw_module_libs@
 
 ## maintainer mode stuff
 EXTRA_PROGRAMS = lircd.simsend lircd.simrec slinke
 noinst_PROGRAMS = @maintmode_daemons_extra@
+
 lircd_simsend_SOURCES = lircd.c
-lircd_simsend_LDADD   = -L../lib -llirc -lpthread @hw_module_libs@
 lircd_simsend_CFLAGS = -DSIM_SEND
+
 lircd_simrec_SOURCES = lircd.c
 lircd_simrec_CFLAGS = -DSIM_REC
-lircd_simrec_LDADD   = -L../lib -llirc -lpthread @hw_module_libs@
 
 slinke_SOURCES = slinke.c slinke.h
-slinke_LDADD   =  -L../lib -llirc
 
 
 if SANDBOXED
