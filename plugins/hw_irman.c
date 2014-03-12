@@ -30,11 +30,7 @@
 
 #include <irman.h>
 
-#include "include/media/lirc.h"
-#include "lirc/hardware.h"
-#include "lirc/serial.h"
-#include "lirc/lirc_log.h"
-#include "lirc/ir_remote.h"
+#include "lirc_driver.h"
 
 #include "hw_irman.h"
 
