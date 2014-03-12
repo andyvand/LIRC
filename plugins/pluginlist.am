@@ -1,0 +1,64 @@
+## Created by make-pluginlist.sh
+plugin_LTLIBRARIES              += hw_accent.la
+hw_accent_la_SOURCES             = hw_accent.c hw_accent.h
+
+plugin_LTLIBRARIES              += hw_bte.la
+hw_bte_la_SOURCES                = hw_bte.c hw_bte.h
+
+plugin_LTLIBRARIES              += hw_creative.la
+hw_creative_la_SOURCES           = hw_creative.c hw_creative.h
+
+plugin_LTLIBRARIES              += hw_creative_infracd.la
+hw_creative_infracd_la_SOURCES   = hw_creative_infracd.c hw_creative_infracd.h
+
+plugin_LTLIBRARIES              += hw_default.la
+hw_default_la_SOURCES            = hw_default.c hw_default.h
+
+plugin_LTLIBRARIES              += hw_devinput.la
+hw_devinput_la_SOURCES           = hw_devinput.c
+
+plugin_LTLIBRARIES              += hw_ea65.la
+hw_ea65_la_SOURCES               = hw_ea65.c hw_ea65.h
+
+plugin_LTLIBRARIES              += hw_hiddev.la
+hw_hiddev_la_SOURCES             = hw_hiddev.c
+
+plugin_LTLIBRARIES              += hw_irlink.la
+hw_irlink_la_SOURCES             = hw_irlink.c hw_irlink.h
+
+plugin_LTLIBRARIES              += hw_logitech.la
+hw_logitech_la_SOURCES           = hw_logitech.c hw_logitech.h
+
+plugin_LTLIBRARIES              += hw_mouseremote.la
+hw_mouseremote_la_SOURCES        = hw_mouseremote.c hw_mouseremote.h
+
+plugin_LTLIBRARIES              += hw_mp3anywhere.la
+hw_mp3anywhere_la_SOURCES        = hw_mp3anywhere.c hw_mp3anywhere.h
+
+plugin_LTLIBRARIES              += hw_mplay.la
+hw_mplay_la_SOURCES              = hw_mplay.c hw_mplay.h
+
+plugin_LTLIBRARIES              += hw_pcmak.la
+hw_pcmak_la_SOURCES              = hw_pcmak.c hw_pcmak.h
+
+plugin_LTLIBRARIES              += hw_pinsys.la
+hw_pinsys_la_SOURCES             = hw_pinsys.c hw_pinsys.h
+
+plugin_LTLIBRARIES              += hw_pixelview.la
+hw_pixelview_la_SOURCES          = hw_pixelview.c hw_pixelview.h
+
+plugin_LTLIBRARIES              += hw_silitek.la
+hw_silitek_la_SOURCES            = hw_silitek.c hw_silitek.h
+
+plugin_LTLIBRARIES              += hw_slinke.la
+hw_slinke_la_SOURCES             = hw_slinke.c hw_slinke.h
+
+plugin_LTLIBRARIES              += hw_tira.la
+hw_tira_la_SOURCES               = hw_tira.c hw_tira.h
+
+plugin_LTLIBRARIES              += hw_udp.la
+hw_udp_la_SOURCES                = hw_udp.c
+
+plugin_LTLIBRARIES              += hw_usbx.la
+hw_usbx_la_SOURCES               = hw_usbx.c hw_usbx.h
+
