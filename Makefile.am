@@ -13,7 +13,7 @@ if SYSTEMD_INSTALL
     SYSTEMD_DIR = systemd
 endif
 
-SUBDIRS = drivers daemons tools doc $(SYSTEMD_DIR)
+SUBDIRS = daemons tools doc $(SYSTEMD_DIR)
 
 
 lirc_confdir        = $(sysconfdir)/lirc
