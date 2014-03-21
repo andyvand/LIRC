@@ -257,36 +257,6 @@ ConfigDriver ()
         fi
     fi
     }
-ConfigSoftware ()
-    {
-    dialog --clear --backtitle "$BACKTITLE" \
-           --title "Software Configuration" \
-           --checklist "$CONFIG_SOFTWARE_TEXT" 14 74 6 \
-             1 "Compile tools for X-Windows" $X11_WINDOWS \
-             2 "Compile with DEBUG code" $DEBUG \
-             3 "Disable daemonize" $NO_DAEMONIZE \
-             4 "Disable long codes" $NO_LONG_CODES \
-             5 "Use syslogd instead of own log-file" $USE_SYSLOG \
-             6 "Enable dynamic codes" $DYNCODES 2>$TEMP
-    if test "$?" = "0"; then
-        {
-        set -- `cat $TEMP`
-        X11_WINDOWS="off"; DEBUG="off"; NO_DAEMONIZE="off"; NO_LONG_CODES="off"
-        USE_SYSLOG="off"; DYNCODES="off"
-        for ITEM in $@; do
-            {
-            if   test $ITEM = "1" || test $ITEM = "\"1\""; then X11_WINDOWS="on"
-            elif test $ITEM = "2" || test $ITEM = "\"2\""; then DEBUG="on"
-            elif test $ITEM = "3" || test $ITEM = "\"3\""; then NO_DAEMONIZE="on"
-            elif test $ITEM = "4" || test $ITEM = "\"4\""; then NO_LONG_CODES="on"
-            elif test $ITEM = "5" || test $ITEM = "\"5\""; then USE_SYSLOG="on"
-            elif test $ITEM = "6" || test $ITEM = "\"6\""; then DYNCODES="on"
-            fi
-            }
-        done
-        }
-    fi
-    }
 SaveConfig ()
     {
     echo "LIRC_DRIVER=$LIRC_DRIVER" >$CONFIG
@@ -366,10 +336,9 @@ while test "$EXIT" != "yes"; do
            --title "Mainmenu" \
            --menu "$MAIN_MENU_TEXT" 13 74 5 \
              1 "Driver configuration ($SELECTED_DRIVER)" \
-             2 "Software configuration" \
-             3 "Save configuration & run configure" \
-             4 "Save configuration & exit" \
-             5 "Exit WITHOUT doing anything" 2>$TEMP
+             2 "Save configuration & run configure" \
+             3 "Save configuration & exit" \
+             4 "Exit WITHOUT doing anything" 2>$TEMP
     if test "$?" != "0"; then
         {
         MESSAGE="Configuration cancelled!"
@@ -379,14 +348,13 @@ while test "$EXIT" != "yes"; do
         {
         set `cat $TEMP`
         if test "$1" = "1"; then ConfigDriver
-        elif test "$1" = "2"; then ConfigSoftware
-        elif test "$1" = "3"; then
+        elif test "$1" = "2"; then
             {
             SaveConfig
             CONFIGURE="yes"
             }
-        elif test "$1" = "4"; then SaveConfig
-        elif test "$1" = "5"; then
+        elif test "$1" = "3"; then SaveConfig
+        elif test "$1" = "4"; then
             {
             MESSAGE="Configuration NOT saved!"
             EXIT=yes
@@ -412,4 +380,3 @@ if test "$CONFIGURE" = "yes"; then
     }
 fi
 ## EOF ######################################################################
-fi
