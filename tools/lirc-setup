@@ -1,0 +1,616 @@
+#!/usr/bin/env python3
+
+''' Interactive lirc configuration tool
+
+ An interactive configuration tool. This requires an built and installed
+ version of lircd. In particular, it requires the remotes to be installed.
+
+ Depending os user selections script will try to cope with:
+ - driver and port in lirc_options.conf
+ - lircd.conf and lircmd.conf
+ - Module initialization in modprobe.conf
+ - Conflicts between userspace drivers and kernel (modprobe.conf).
+'''
+
+USAGE = '''
+lirc-setup [hardware.yaml]
+
+hardware.yaml search path defaults to ./, ../, /usr/share/lirc and
+the dir where lirc-setup lives.
+'''
+
+import glob
+import shlex
+import os
+import os.path
+import re
+import subprocess
+import sys
+import yaml
+
+YAML_PATH = './hardware.yaml'
+DIALOG_WIDTH = 50
+MENU_HEIGHT = 35
+CONFIG_PATH = 'configuration.conf'
+
+_SAVE_MSG = '''
+Configuration saved as file configuration.conf .You can inspect this file
+and eventually run 'sudo lirc-install-configuration configuration.conf' on the
+command line to update your configuration. '''
+
+def locate(filename):
+    ''' Try to locate a filename. '''
+
+    here = os.path.realpath(os.path.dirname(sys.argv[0]))
+
+    if os.path.exists(os.path.join(here, filename)):
+        return os.path.join(here, filename)
+    elif os.path.exists(os.path.join(here, '..', filename)):
+        return os.path.join(here, '..', filename)
+    cmd = ['pkg-config', '--variable=pkgdatadir', 'lirc']
+    pkgdatadir = subprocess.check_output(cmd).decode('utf-8')
+    if os.path.exists(os.path.join(pkgdatadir, filename)):
+        return os.path.join(pkgdatadir, filename)
+    cmd = ['pkg-config', '--variable=prefix', 'lirc']
+    prefix = subprocess.check_output(cmd).decode('utf-8')
+    if os.path.exists(os.path.join(prefix, 'sbin', filename)):
+        return os.path.join(prefix, 'sbin', filename)
+    return ''
+
+
+def msgbox(text):
+    ''' Display a message dialog. '''
+
+    cmd = ['dialog', '--no-collapse', '--msgbox', text, '0', '0']
+    try:
+        subprocess.check_call(cmd)
+    except OSError as ex:
+        print(("Bad exitcode from msgbox: " + str(ex)))
+
+
+def list_ttys():
+    ''' List all currently used ttys on this host. '''
+
+    def driver_path(s):
+        ''' Path to driver directory for given /class/tty/x device,. '''
+        return os.path.join(s, 'device', 'driver')
+
+    # (Not tested)
+    # def is_inactive_5250(s):
+    #     try:
+    #         driver = os.path.basename(os.readlink(driver_path(s)))
+    #     except (IOError, OSError):
+    #         return False
+    #     return driver == 'serial5250'
+
+    syslist = glob.glob("/sys/class/tty/*")
+    syslist = [s for s in syslist if os.path.exists(driver_path(s))]
+    # syslist = [s for s in syslist if not is_inactive_5250(s)]
+    devices = [ "/dev/" + os.path.basename(s) for s in syslist]
+    return devices
+
+
+def get_module_parms(module):
+    ''' Let user add arbitrary module setup.'''
+    try:
+        bytes_ = subprocess.check_output(['modinfo', module])
+        modinfo = bytes_.decode('utf-8')
+    except (IOError, OSError):
+        msgbox("Warning: Cannot run modinfo %s (module not installed?)"
+               % module)
+        return ""
+    modinfo = modinfo.split("\n")
+    modinfo = (m for m in modinfo if m.startswith('parm:'))
+    modinfo = (re.sub('^parm:[ ]*', '', m) for m in modinfo)
+    modinfo = (m for m in modinfo if not m.startswith('irq:'))
+    modinfo = (m for m in modinfo if not m.startswith('io:'))
+    text = "Add additional module parameters according to modinfo below."
+    text += "\n\n" + "\n".join(modinfo)
+    cmd = ['dialog', '--cr-wrap', '--inputbox', text, '0', '0']
+    p = subprocess.Popen(cmd, stderr=subprocess.PIPE)
+    stderr = p.communicate()[1].decode('utf-8').strip()
+    return stderr if p.returncode == 0 else ""
+
+
+def select_any_config(menu, config):
+    ''' Let user select any existing config file. '''
+
+    def is_valid(remote, key):
+        ''' True if key exists and not needs to be defined by user.'''
+        return key in remote and not remote[key].startswith('run_')
+
+    def save_callback(menu, config):
+        ''' Store selected lircd/lircmd files in config. '''
+        config['lircd_conf'] = menu['lircd_conf']
+        if 'lircmd_conf' in menu:
+            config['lircmd_conf'] = menu['lircmd_conf']
+        return menu['parent']['parent'], config
+
+    remotes = hardware['lirc']['remotes']
+    topmenu = dict()
+    topmenu['submenus'] = dict()
+    topmenu['parent'] = menu
+    topmenu['label'] = "This device supports  most configurations." \
+        " Select a config file"
+    for key, r in remotes.items():
+        lircd_conf = r['lircd_conf'] if is_valid(r, 'lircd_conf') else None
+        lircmd_conf = r['lircmd_conf'] if is_valid(r, 'lircmd_conf') else None
+        if not (lircd_conf or lircmd_conf):
+            continue
+        tmpmenu = dict()
+        tmpmenu['lircd_conf'] = lircd_conf
+        tmpmenu['lircmd_conf'] = lircmd_conf
+        tmpmenu['label'] = r['label']
+        tmpmenu['action'] = save_callback
+        tmpmenu['parent'] = topmenu
+        topmenu['submenus'][key] = tmpmenu
+    return topmenu, config
+
+
+def select_module_lpt(menu, config, arg):
+    ''' Let user determine kernel lpt port parameters for parallel port. '''
+
+    def set_modinit(config, module, irq, iobase):
+        ''' Set modinit in config from args. '''
+        modinit = 'options %s irq=%s iobase=%s' % (module, irq, iobase)
+        config['modinit'] = modinit
+
+    def custom_values(menu, config):
+        ''' Invoke new custom values menu. '''
+        cmd = 'dialog --form  "select io parms" 0 0 5' \
+            ' irq  1 1 "" 1 10 6 1' ' iobase  2 1 "" 2 10 6 5'
+        p = subprocess.Popen(cmd.split(), stderr=subprocess.PIPE)
+        stderr = p.communicate()[1].split('\n')
+        if p.returncode == 0:
+            set_modinit(config,
+                        menu['module'], stderr[0].strip(), stderr[1].strip())
+        return menu['parent']['parent'], config
+
+    def save_callback(menu, config):
+        ''' Store selected  parameters in config. '''
+        if menu['irq'] == '0':
+            return custom_values(menu, config)
+        set_modinit(config, menu['module'], menu['irq'], menu['iobase'])
+        if menu['customize']:
+            config['modinit'] += ' ' +  get_module_parms(menu['module'])
+        return menu['parent']['parent'], config
+
+    ports = {'1': ['LPT1 (0x378, 7)', '7', '0x378'],
+             '2': ['LPT2 (0x278, 7)', '7', '0x278'],
+             '3': ['LPT3 (0x3bc, 5)', '5', '0x3bc'],
+             '4': ['Other (custom parameters)', '0', '0']
+    }
+    args = arg.split()
+    topmenu = dict()
+    topmenu['submenus'] = dict()
+    topmenu['parent'] = menu
+    topmenu['label'] = "Select communication port parameters for " + args[1]
+    for key, p in ports.items():
+        tmpmenu = dict()
+        tmpmenu['label'] = p[0]
+        tmpmenu['irq'] = p[1]
+        tmpmenu['iobase'] = p[2]
+        tmpmenu['module'] = args[2]
+        tmpmenu['customize'] = False
+        if len(args) >= 4:
+            tmpmenu['customize'] = 'custom' in args[3]
+        tmpmenu['action'] = save_callback
+        tmpmenu['parent'] = topmenu
+        topmenu['submenus'][key] = tmpmenu
+    return topmenu, config
+
+
+def select_module_tty(menu, config, arg):
+    ''' Let user determine kernel com port parameters for serial port. '''
+
+    def set_modinit(config, module, irq, iobase):
+        ''' Set modinit in config from args. '''
+        modinit = 'options %s irq=%s iobase=%s' % (module, irq, iobase)
+        config['modinit'] = modinit
+
+    def custom_values(menu, config):
+        ''' Invoke new custom values menu. '''
+        cmd = 'dialog --form  "select io parms" 0 0 5' \
+            ' "irq (3,4, 19, 11, 12...)"  1 1 "" 1 40 3 3' \
+            ' "IO Base Address (0x2f8, 0x3f8,...)"  2 1 "" 2 40 6 5'
+        p = subprocess.Popen(shlex.split(cmd), stderr=subprocess.PIPE)
+        stderr = p.communicate()[1].decode('utf-8').split('\n')
+        if p.returncode == 0:
+            set_modinit(config,
+                        menu['module'], stderr[0].strip(), stderr[1].strip())
+        return menu['parent']['parent'], config
+
+    def save_callback(menu, config):
+        ''' Store selected  parameters in config. '''
+        if menu['irq'] == '0':
+            return custom_values(menu, config)
+        set_modinit(config, menu['module'], menu['irq'], menu['iobase'])
+        if menu['customize']:
+            config['modinit'] += ' ' +  get_module_parms(menu['module'])
+        return menu['parent']['parent'], config
+
+    ports = {'com1': ['COM1 (0x3f8, 4)', '4', '0x3f8'],
+             'com2': ['COM2 (0x2f8, 3)', '3', '0x2f8'],
+             'com3': ['COM3 (0x3e8, 4)', '4', '0x3e8'],
+             'com4': ['COM4 (0x2e8, 4)', '3', '0x2e8'],
+             'com9': ['Other (custom parameters)', '0', '0']
+    }
+    args = arg.split()
+    topmenu = dict()
+    topmenu['submenus'] = dict()
+    topmenu['parent'] = menu
+    topmenu['label'] = "Select communication port parameters for " + args[1]
+    for key, p in ports.items():
+        tmpmenu = dict()
+        if key == args[1]:
+            topmenu['selected_label'] = p[0]
+        tmpmenu['label'] = p[0]
+        tmpmenu['irq'] = p[1]
+        tmpmenu['iobase'] = p[2]
+        tmpmenu['module'] = args[2]
+        tmpmenu['customize'] = False
+        if len(args) >= 4:
+            tmpmenu['customize'] = 'custom' in args[3]
+        tmpmenu['action'] = save_callback
+        tmpmenu['parent'] = topmenu
+        topmenu['submenus'][key] = tmpmenu
+    return topmenu, config
+
+
+def select_tty(menu, config, matching='.*'):
+    ''' Decide which tty port to use for userspace serial driver.'''
+
+    def save_callback(menu, config):
+        ''' Store selected lircd/lircmd files in config. '''
+        config['device'] = menu['device']
+        return menu['parent']['parent'], config
+
+    topmenu = dict()
+    topmenu['submenus'] = dict()
+    topmenu['parent'] = menu
+    topmenu['label'] = "Select a tty device (only listing currently in use)"
+    ttys = list_ttys()
+    for tty in ttys:
+        if not re.search(matching, tty):
+            continue
+        tmpmenu = dict()
+        tmpmenu['device'] = tty
+        tmpmenu['label'] = tty
+        tmpmenu['action'] = save_callback
+        tmpmenu['parent'] = topmenu
+        topmenu['submenus'][tty] = tmpmenu
+    return topmenu, config
+
+
+def select_usb_tty(menu, config):
+    ''' Decide which usb tty port to use for userspace serial driver.'''
+    return select_tty(menu, config, '.*USB.*')
+
+def select_event_device(menu, config):
+    ''' Decide which event device to use for devinput driver.'''
+
+    def list_event_devices():
+        ''' Return a dict label_by_device, labels from /input/by-id. '''
+        result = {}
+        for l in glob.glob("/dev/input/by-id/*"):
+            device = os.path.realpath(os.readlink(l))
+            result[device] = os.path.basename(l)
+        return result
+
+    def save_callback(menu, config):
+        ''' Store selected lircd/lircmd files in config. '''
+        config['device'] = menu['device']
+        return menu['parent']['parent'], config
+
+    topmenu = dict()
+    topmenu['submenus'] = dict()
+    topmenu['parent'] = menu
+    topmenu['label'] = "Select an  event device for devinput driver"
+    devices = list_event_devices()
+    for device, label in devices.items():
+        if len(label) > DIALOG_WIDTH:
+            label = label[len(label) - DIALOG_WIDTH:]
+        tmpmenu = dict()
+        tmpmenu['device'] = device
+        tmpmenu['label'] = label
+        tmpmenu['action'] = save_callback
+        tmpmenu['parent'] = topmenu
+        topmenu['submenus'][os.path.basename(device)] = tmpmenu
+    return topmenu, config
+
+def select_port(menu, config):
+    ''' Invoke select port menu. '''
+    cmd = 'dialog --form  "Select udp port" 0 0 4 port  1 1 "" 1 10 6 6'
+    p = subprocess.Popen(shlex.split(cmd), stderr=subprocess.PIPE)
+    stderr = p.communicate()[1].decode('utf-8').split('\n')
+    if p.returncode == 0:
+        config['device'] = stderr[0].strip()
+    return menu, config
+
+
+def check_device(config):
+    ''' Check device argument, return results as a string. '''
+    s = ''
+    if not 'device' in config or not config['device']:
+        s += 'device:  error: No device configured.\n'
+    elif config['device'] == '/dev/lirc0':
+        found = glob.glob('/dev/lirc?')
+        if len(found) == 0:
+            s += 'device: Error: /dev/lirc0 does not exist.\n'
+        elif len(found) == 1:
+            s += 'device: OK: /dev/lirc0 exists.\n'
+        else:
+            s += 'device: Warning: several /dev/lircX' \
+                                ' devices exist, lirc0 might be wrong\n'
+    else:
+        try:
+            p = int(config['device'])
+            s += 'device: looks like an UDP port, cannot check further.\n'
+            return s
+        except ValueError:
+            pass
+        if os.path.exists(config['device']):
+            s += 'device: OK: %s exists.\n' % config['device']
+        else:
+            s += 'device: Error: %s does not exist.\n' % config['device']
+    return s
+
+
+def check_modules(config):
+    ''' Check modules argument, return results as a string. '''
+    s = ''
+    if not 'modules' in config or not config['modules']:
+        s += 'modules:  OK: no kernel modules required.\n'
+    else:
+        with open('/proc/modules') as f:
+            all_modules = f.readlines()
+        all_modules = [m.split()[0] for m in all_modules]
+        for m in config['modules']:
+            cmd = ['sh', '-c', 'find /lib/modules/$(uname -r) -name %s.ko' % m]
+            found = subprocess.check_output(cmd).decode('utf-8').strip()
+            if m in found:
+                s += 'modules: %s: OK, module exists\n' % m
+                if m in all_modules:
+                    s += 'modules: %s: OK, module is loaded\n' % m
+                else:
+                    s += 'modules: %s: Warning: module is not loaded.\n' % m
+            else:
+                s += 'modules: %s: Error, module does not exist\n' % m
+    return s
+
+
+def check_driver(config):
+    ''' Check driver argument, return results as a string. '''
+    s = ''
+    if not 'driver' in config or not config['driver']:
+        s += 'driver:  error: No driver configured.\n'
+    else:
+        driver = config['driver']
+        bytes_ = subprocess.check_output(['lircd', '-H', 'help'])
+        all_drivers = bytes_.decode('utf-8')
+        if driver in all_drivers:
+            s += 'driver: OK: lirc driver %s is available\n' % driver
+        else:
+            s += 'driver: error: lirc driver %s not available\n' % driver
+    return s
+
+
+def check_lircd_conf(config):
+    ''' Check lircd_conf argument, return results as a string. '''
+    s = ''
+    if not 'lircd_conf' in config or not config['lircd_conf']:
+        s += 'lircd_conf: Warning: No lircd.conf configured.\n'
+        return s
+    remotes_path = locate('remotes')
+    path = os.path.join(remotes_path, config['lircd_conf'])
+    if os.path.exists(path):
+        s += 'lircd.conf: OK: File %s exists\n' % config['lircd_conf']
+        tool_path = locate('lirc-config-tool')
+        cmd = [tool_path, '-sMc', path]
+        try:
+            text = subprocess.check_output(cmd).decode('utf-8')
+        except (subprocess.CalledProcessError, OSError):
+            s += "lircd.conf: Warning: cannot run generate-lircr check\n"
+        else:
+            bad, total = text.split()[1:]
+            if  bad == '0':
+                s += 'lircd.conf: OK: All symbols in legal namespace'
+            else:
+                if float(bad)/float(total) < 0.33:
+                    s += "lircd.conf: OK: %s out of %s symbols not in" \
+                        " namespace (not too bad)." % (bad, total)
+                else:
+                    s += "lircd.conf: Warning: %s out of %s symbols not in" \
+                         " namespace (too many?)\n" % (bad, total)
+                    s += 'lircd.conf: Info: Use generate-lircrc -sc %s to' \
+                         ' check\n' % path
+    else:
+        s += 'lircd.conf: Error: File %s does not exist.\n' % \
+                config['lircd_conf']
+    return s
+
+
+def check_config(menu, config):
+    ''' Check current configuration. '''
+
+    s = 'CONFIGURATION CHECK\n\n'
+    s += check_device(config)
+    s += check_driver(config)
+    s += check_modules(config)
+    s += check_lircd_conf(config)
+    msgbox(s)
+    return menu['parent'], config
+
+
+def view_config(menu, config):
+    ''' Display current configuration. '''
+    s = ''
+    for key in sorted(config.keys()):
+        s += ('%-12s ' % (key + ':')) + str(config[key]) + '\n'
+    if not s:
+        s = "The configuration is empty"
+    msgbox(s)
+    return menu['parent'], config
+
+
+def save_and_exit(config):
+    ''' Save current config, display exit message and exit.'''
+
+    def format_item(what):
+        ''' Return item in printable form. '''
+        if not what:
+            return ""
+        elif isinstance(what, list):
+            return  ' '.join(what)
+        else:
+            return str(what)
+
+    with open(CONFIG_PATH, 'w') as f:
+        f.write("[configuration]\n")
+        for key in sorted(config.keys()):
+            f.write("%-16s= %s\n" % (key, format_item(config[key])))
+    msgbox(_SAVE_MSG)
+    sys.exit(0)
+
+
+def configure(menu, config):
+    ''' Handle the different configuration options, updates config. '''
+    # pylint: disable=too-many-branches,too-many-return-statements
+
+    def default_match(key, what):
+        ''' True if key exists, startswith what and not in confgf.'''
+        if not key in menu or key in config:
+            return False
+        return menu[key].startswith(what)
+
+    def select_device(device):
+        ''' User device selection.'''
+        if device.startswith('run_select_tty'):
+            return select_tty(menu, config)
+        elif device.startswith('run_select_usb_tty'):
+            return select_usb_tty(menu, config)
+        elif device.startswith('run_select_event_device'):
+            return select_event_device(menu, config)
+        elif device.startswith('run_select_port'):
+            return select_port(menu, config)
+
+    if 'action' in menu:
+        # configuration callback
+        return menu['action'](menu, config)
+    elif default_match('menu_action', 'view_config'):
+        return view_config(menu, config)
+    elif default_match('menu_action', 'check_config'):
+        return check_config(menu, config)
+    elif default_match('menu_action', 'save_and_exit'):
+        return  save_and_exit(config)
+    elif default_match('menu_action', 'quit'):
+        print("Exit without saving changes")
+        sys.exit(0)
+    elif default_match('lircd_conf', 'run_select_any_config'):
+        return select_any_config(menu, config)
+    elif default_match('modinit', 'run_select_module_tty'):
+        return select_module_tty(menu, config, menu['modinit'])
+    elif default_match('modinit', 'run_select_lpt_port'):
+        return select_module_lpt(menu, config, menu['modinit'])
+    elif default_match('device', 'run_'):
+        return select_device(menu['device'])
+    for key in ['device', 'driver', 'modinit', 'modules',
+                'lircd_conf', 'lircmd_conf']:
+        if key in config:
+            continue
+        config[key] = menu[key] if key in menu else None
+    return menu['parent'], config
+
+
+def build_options(menus):
+    ''' From a list of menus, build a simple dict with user key -> menu.'''
+
+    def sort_key(menu):
+        ''' Key to sort menu entries, respects order_hint. '''
+        s = ''
+        if 'order_hint' in menu:
+            s += menu['order_hint']
+        if 'label' in menu:
+            s += menu['label']
+        return s
+
+    tags = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz'
+    options = {}
+    for ix, m in enumerate(sorted(menus, key=sort_key)):
+        try:
+            options[tags[ix]] = m
+        except IndexError:
+            options["~%02d" % ix] = m
+    return options
+
+
+def run_menu(menu, config):
+    ''' Present the menu to user and let her choose. '''
+
+    def build_cmd(menu, options):
+        ''' Construct the dialog radiolist command string.'''
+        cmd = 'dialog'
+        if menu != menu['parent']:
+            cmd += ' --extra-button --extra-label Up'
+        cmd += ' --radiolist "' + menu['label'] + '"'
+        cmd += ' 0 0  %d' % min(MENU_HEIGHT, len(options))
+        selected_label = ''
+        if 'selected_label' in menu:
+            selected_label = menu['selected_label']
+        elif  menu['selected_tag'] in options:
+            selected_label =  options[menu['selected_tag']]['label']
+        for tag in sorted(options.keys()):
+            state = 'off'
+            if options[tag]['label'] == selected_label:
+                state = 'on'
+            cmd += ' %s "%s" %s' % (tag, options[tag]['label'], state)
+        return shlex.split(cmd)
+
+    while menu:
+        if 'submenus' in menu:
+            if not 'selected_tag' in menu:
+                menu['selected_tag'] = ''
+            options = build_options(list(menu['submenus'].values()))
+            p = subprocess.Popen(build_cmd(menu, options),
+                                 stderr=subprocess.PIPE)
+            selected = p.communicate()[1].decode('utf-8').strip()
+            if not p.returncode in [0, 1, 3]:
+                sys.stderr.write("Bad returncode: %d\n" % p.returncode)
+                sys.exit(p.returncode)
+            if p.returncode == 3:
+                menu, config = run_menu(menu['parent'], config)
+            elif p.returncode == 1:
+                print("Cancelled by user")
+                sys.exit(1)
+            elif selected:
+                options[selected]['parent'] = menu
+                menu['selected_tag'] = selected
+                menu, config = run_menu(options[selected], config)
+            else:
+                menu, config = run_menu(menu, config)
+        else:
+            menu, config = configure(menu, config)
+
+def main():
+    ''' Indeed: the main function. '''
+    global hardware
+
+    if len(sys.argv) > 1 and sys.argv[1] in ['-h', '--help']:
+        print(USAGE)
+        sys.exit(0)
+    elif len(sys.argv) == 2:
+        yaml_path = sys.argv[1]
+    else:
+        yaml_path = locate('hardware.yaml')
+    with open(yaml_path) as f:
+        hardware = yaml.load(f.read())
+    start_menu = hardware['lirc']['main_menu']
+    start_menu['parent'] = start_menu
+    start_menu['selected_tag'] =  '0'
+    run_menu(start_menu, {})
+
+
+hardware = None
+main()
+
+#                                             vim: set expandtab ts=4 sw=4:
