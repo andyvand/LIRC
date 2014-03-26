@@ -26,7 +26,7 @@ function help
 Generate lirc configuration files.
 
 Usage:
-    $( basename $0 ) -s [-c file]
+    $( basename $0 ) -s [-c file] [-M]
     $( basename $0 ) -u [-c file]
     $( basename $0 ) -l
     $( basename $0 ) [-o directory] [-c file] [files...]
@@ -38,6 +38,7 @@ Options:
  -u         Update existing lircd file to use key symbols in namespace.
  -l         List available files to generate.
  -d         Dump file template(s) usable as stdin on stdout.
+ -M         When scanning (-s), emit machine-readable output.
  -o <dir>   Output directory, defaults to $OUTPUT_DIR.
  -c <file>  lircd(8) config file, defaults to $LIRC_CONF.
  -h         Print this message.
@@ -60,7 +61,7 @@ $(basename $0) \- tool to scan and generate lirc config files
 .br
 .B
 .LL 90
-$(basename $0) \fR  \-s|-u [ -c FILE]
+$(basename $0) \fR  \-s|-u [-M] [ -c FILE]
 .br
 .B
 .LL=20
@@ -92,8 +93,16 @@ Output directory, defaults to ~/.config/lirc
 \fB\-c \<lircd-filename\>\fR
 lircd(8) config file, defaults to /etc/lirc/lircd.conf
 .TP
+\fB\-M\fR
+When scanning (-s), emit machine-readable output without any
+informational text
+.TP
 \fB\-h\fR
 Print help message
+.TP
+\fB\-m\fR
+Display manpage (this might differ slightly from installed manpage,
+since some paths depends on invoking user).
 .PP
 .SH DESCRIPTION
 .PP
@@ -118,9 +127,9 @@ key symbols in /etc/lirdc.conf. By default, files are created in
 .PP
 Generated lircrc files basically combines known keys from
 /etc/lirc/lircd.conf with template data for an application. The process
-results in a lircrc file, a list a of unused keys and some entries
-which don't match any existing key. The unused keys and unmatched entries
-are written as comments into the generated file.
+results in a lircrc file, a list a of unused keys and  application
+capabilities which don't match any existing key. The unused keys and
+unmatched capabilities are written as comments into the generated file.
 
 An 'illegal' key i. e., a key not in namespace, will not match any entry
 and will thus always be unused. However, it's perfectly possible to
@@ -670,10 +679,15 @@ function scan_keycodes
     parse_lircd
 
     local count=${#ALL_LIRCD_KEYS[@]}
-    echo "Found $count button definitions in ${OPTIONS['c']}"
 
+    if (( ${OPTIONS['M']} != 0 )); then
+       printf "%50s %3s %3s\n" \
+           ${OPTIONS['c']} ${#BAD_LIRCD_KEYS[@]} ${#ALL_LIRCD_KEYS[@]}
+       return
+    fi
+    echo "Found $count button definitions in ${OPTIONS['c']}"
     if (( ${#BAD_LIRCD_KEYS[@]} != 0 )); then
-        echo 'Unusable keys:'
+        echo "Found ${#BAD_LIRCD_KEYS[@]} symbols not in namespace:"
         local key
         for key in ${BAD_LIRCD_KEYS[@]}; do
             echo "    $key"
@@ -734,8 +748,8 @@ function translate_key
                         fi
                         case $1 in
                             '\*') echo KEY_NUMERIC_STAR;;
-                            '#')  echo KEY_NUMERIC_POUND;;
-                            *)    echo X_WTF;;
+                             '#') echo KEY_NUMERIC_POUND;;
+                               *) echo X_WTF;;
                         esac
                         ;;
         [a-z])          echo "KEY_${1^*}" ;;
@@ -938,10 +952,10 @@ function get_options()
     OPTIONS['o']="$OUTPUT_DIR"
     OPTIONS['c']="$LIRC_CONF"
     OPTIONS['t']="$( list_all_files | sed 's/stdin//' )"
-    OPTIONS['s']=0; OPTIONS['d']=0; OPTIONS['u']=0
+    OPTIONS['s']=0; OPTIONS['d']=0; OPTIONS['u']=0; OPTIONS['M']=0
 
     local flag
-    while getopts "o:c:dlsumh" flag
+    while getopts "o:c:dlsumhM" flag
     do
         case $flag in
 
@@ -949,7 +963,7 @@ function get_options()
               OPTIONS[$flag]="$OPTARG"
               ;;
 
-         s|d|u)
+         s|d|u|M)
               OPTIONS[$flag]=1
               ;;
 
