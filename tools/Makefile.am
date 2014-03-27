@@ -47,6 +47,7 @@ lircrcd_SOURCES = lircrcd.c
 
 if HAVE_PYTHON
 bin_SCRIPTS = pronto2lirc
+sbin_SCRIPTS = lirc-config-tool
 
 pronto2lirc: $(srcdir)/pronto2lirc.py
 	echo "#! ${PYTHON}" >$@
