@@ -46,5 +46,8 @@ lircrcd_SOURCES = lircrcd.c
 
 if HAVE_PYTHON
 dist_bin_SCRIPTS = pronto2lirc
-dist_sbin_SCRIPTS = lirc-config-tool lirc-setup
+dist_sbin_SCRIPTS = lirc-config-tool \
+                    lirc-setup \
+                    lirc-install-configuration \
+                    lircd-modprobe
 endif
