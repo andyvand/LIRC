@@ -1,6 +1,0 @@
-#!/bin/bash
-##awk ' /'^if.*\$driver'/   { copy = 1 }
-awk ' /^if.*\$driver/   { copy = 1; gsub("\"", "", $5); gsub(";", "", $5); file=$5 }
-      /^$/              { copy = 0 }
-                        { if (copy) print $0 >> file ".conf" }'
-fi
