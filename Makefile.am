@@ -6,8 +6,7 @@ ACLOCAL_AMFLAGS             = -I m4
 ## we need version 1.5 of automake for DIST_SUBDIRS to work and dist-bzip2.
 AUTOMAKE_OPTIONS            = 1.5 check-news dist-bzip2
 
-EXTRA_DIST                  = setup-driver.sh setup.data data2setup.sh \
-                              setup-functions.sh ANNOUNCE TODO ChangeLog
+EXTRA_DIST                  = ANNOUNCE TODO ChangeLog
 
 BUILT_SOURCES               = paths.h
 
@@ -50,7 +49,7 @@ dist_m4_DATA                = m4/ac-path-kernel-source.m4
 
 dist-hook:
 	(cd $(srcdir)/contrib/hal/ && ./gen-hal-fdi.pl)
-	for f in contrib remotes configs; do \
+	for f in remotes contrib; do \
 	    cp -pr $(srcdir)/$$f $(distdir)/$$f; done
 
 paths.h: Makefile

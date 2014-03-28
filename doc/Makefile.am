@@ -21,7 +21,7 @@ generated_html          += html/smode2.html
 endif
 
 docdir                  = @datadir@/doc/@PACKAGE@
-dist_doc_DATA           = irxevent.keys
+dist_doc_DATA           = irxevent.keys lirc.hwdb
 
 htmldir                 = $(docdir)/html
 nodist_html_DATA        = $(generated_html)
