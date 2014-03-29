@@ -8,6 +8,8 @@ AUTOMAKE_OPTIONS = 1.5 check-news dist-bzip2
 
 EXTRA_DIST =  setup.sh setup-driver.sh setup.data data2setup.sh ANNOUNCE TODO
 
+BUILT_SOURCES = paths.h
+
 ## daemons/ and tools/ should appear before doc/ for help2man to work.
 if SYSTEMD_INSTALL
     SYSTEMD_DIR = systemd
@@ -52,6 +54,12 @@ dist-hook:
 		cp -pr $(srcdir)/$$f $(distdir)/$$f; done
 	git log >$(distdir)/ChangeLog
 
-DISTCLEANFILES = configure.sh .setup.config
+paths.h: Makefile
+	@echo '#define DATADIR          "$(datadir)"' >$@
+	@echo '#define SYSCONFDIR       "$(sysconfdir)"' >>$@
+	@echo '#define VARRUNDIR        "$(localstatedir)/run"' >>$@
+	@echo '#define LOCALSTATEDIR    "$(localstatedir)"' >>$@
+
+DISTCLEANFILES = configure.sh  ChangeLog paths.h
 
 CLEANFILES = *~ remotes/*~ contrib/*~
