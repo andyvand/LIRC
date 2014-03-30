@@ -35,6 +35,10 @@ dist_lirc_conf_DATA         = lircd.conf lirc_options.conf lircmd.conf
 pkgconfigdir                = $(libdir)/pkgconfig
 dist_pkgconfig_DATA         = lirc.pc lirc-driver.pc
 
+dist_pkgdata_DATA           = remotes.tar.gz
+
+# ----------------------------------------------------------------------
+
 ChangeLog: .phony
 
 .phony:
@@ -42,8 +46,6 @@ ChangeLog: .phony
 	    echo "See http://http://sourceforge.net/p/lirc/git/ci//tree/" > \
 	    ChangeLog
 
-m4dir                       = m4
-dist_m4_DATA                = m4/ac-path-kernel-source.m4
 
 # ----------------------------------------------------------------------
 
@@ -51,6 +53,16 @@ dist-hook:
 	(cd $(srcdir)/contrib/hal/ && ./gen-hal-fdi.pl)
 	for f in remotes contrib; do \
 	    cp -pr $(srcdir)/$$f $(distdir)/$$f; done
+
+install-data-hook:
+	cd $(DESTDIR)$(pkgdatadir); \
+	    tar xzf remotes.tar.gz; rm -f remotes.tar.gz
+
+uninstall-local:
+	cd $(DESTDIR)$(pkgdatadir); rm -rf remotes
+
+remotes.tar.gz:
+	tar czf $@ remotes
 
 paths.h: Makefile
 	@echo '#define DATADIR          "$(datadir)"' >$@
