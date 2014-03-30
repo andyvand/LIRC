@@ -1,0 +1,7 @@
+man-html
+man/*.[1-9]
+man2html
+man2html.o
+html
+lirc.hwdb
+
