@@ -34,14 +34,6 @@
 
 #include "lirc_private.h"
 
-#ifdef DEBUG
-int debug = 10;
-#else
-int debug = 0;
-#endif
-char *hostname = "";
-int daemonized = 0;
-
 
 int main(int argc, char **argv)
 {
@@ -58,7 +50,11 @@ int main(int argc, char **argv)
 	int use_raw_access = 0;
 	int have_device = 0;
 
-	progname = "mode2";
+#ifdef DEBUG
+	lirc_log_open("mode2", 0, LOG_DEBUG);
+#else
+	lirc_log_open("mode2", 0, 0);
+#endif
 	hw_choose_driver(NULL);
 	while (1) {
 		int c;
