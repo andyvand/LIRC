@@ -4,11 +4,16 @@
     <H1 ALIGN="CENTER">Dependencies</H1>
     <HR WIDTH="70%">
 
+    <p>
+      Several scripts need the python3 PyYaml package at
+      http://pyyaml.org/wiki/PyYAML.
+    </p>
+
     <P>
-      To use LIRC's <em>setup.sh</em> script you need the dialog
+      To use LIRC's <em>lirc-setup</em> script you need the dialog
       package. It already should be installed on most systems. The
-      setup.sh script makes configuration of LIRC much easier but
-      using it is not obligatory.
+      lirc-setup script makes configuration of LIRC much easier but
+      using it is not mandatory.
     </P>
 
     <P>
@@ -32,61 +37,6 @@
     </P>
 
     <A NAME="kernel"></A>
-
-    <P>
-      <B>Kernel modules:</B> All devices that require a kernel module
-      will need the properly configured kernel sources being available
-      somewhere in /usr/src/. During the build process of this package
-      the kernel Makefile and the current kernel configuration will be
-      used to work around some other problems that would arise if we
-      used our own Makefile. That means that you might have to build
-      your own kernel which is a good idea anyway. Make sure you use
-      the standard kernel which you can download at <A
-        HREF="http://www.kernel.org">www.kernel.org</A>.  Don't use any
-      kernel sources that have been modified for your
-      distribution. For example you won't be able to compile some
-      modules for kernels that come with S.u.S.E. 7.0. Please refer to
-      the documentation of your distribution or read the
-      <em>README</em> file in the kernel source directory to get more
-      information on how to compile and set up an own kernel. More
-      documentation is available at the <A
-        HREF="http://sunsite.unc.edu/LDP/">Linux Documentation
-      Project</A>.
-    </P>
-    <P>
-      If you are still running a stock kernel that came with your
-      distribution and don't want to compile a new kernel you can try
-      the following. Install the kernel sources package of the
-      currently running kernel. Most distributions provide rpm/deb
-      packages of their stock kernels. Double-check that you selected
-      the correct kernel sources. Now make sure that there is a file
-      called .config in the root directory of the kernel source
-      tree. This file holds the configuration used to compile this
-      kernel. If it is not available and you can't get it from a
-      different source (/boot/config-<em>version</em> (Debian),
-      /proc/config.gz (SuSE) or
-      /usr/src/linux-<em>version</em>/configs/ (Red Hat) are good
-      places to look into) you are out of luck and will have to
-      configure and compile your own kernel. Otherwise call <em>make
-      oldconfig &amp;&amp; make dep</em> inside the root directory of
-      the kernel source tree. After that you should be able to compile
-      the LIRC modules without problems. Just make sure that the
-      configure script for the LIRC package picked the correct kernel
-      source directory. But be aware that there might still be some
-      problems due to incompatible extensions of the distribution
-      kernels as mentioned in the last paragraph. There are even more
-      pitfalls. The modules should be compiled with the same compiler
-      version. Otherwise you might see strange lockups and kernel
-      oopses. Another problem might be that some distribution vendors
-      also modify the kernel version variables inside the Makefile of
-      the kernel and e.g. add something like <em>custom</em> to the
-      EXTRAVERSION variable. This will result in the modules being
-      installed in the wrong directory. In such cases it is common
-      practice to remove the <em>custom</em> string before proceeding
-      with kernel compilation. This has been only a list of known
-      problems. If you run into such problems I won't be able to help
-      you, so don't even ask.
-    </P>
     <P>
       If you want to use a home-brew receiver, an Anir Multimedia
       Magic, a Packard Bell receiver, the IRdeo or if you want to use
@@ -179,69 +129,20 @@
     <A NAME="compiling"></A><HR>
     <H1 ALIGN="CENTER">Compiling</H1>
     <HR WIDTH="70%">
+    <p>
+    Contrary to earlier versions, lirc nowadays always compiles all available
+    user-space drivers and no kernel drivers. So the bulid procedure is
+    the generic one:
+    <ul>
+        <li> autoreconf -fi </li>
+        <li> ./configure --enable-debug --with-syslog=LOG_DAEMON. </li>
+        <li> make </li>
+        <li> make install </li>
+    </ul>
+    To aid in the process to configure lirc there is the script lirc-setup.
+    This is applied after lirc is installed.
+    </p>
 
-    <P>
-      Before compiling the binaries you have to choose which driver to
-      use. This can easily be done with the <em>setup.sh</em>
-      script. Just type <em>./setup.sh</em> from the shell
-      prompt. After selecting your driver you can exit the setup with
-      &quot;Save configuration &amp; run configure&quot;.
-    </P>
-
-    <P>
-      If you don't have <em>dialog</em> installed you will have to do
-      it the hard way and give the correct parameters to the configure
-      script manually. See <em>./configure --help</em> for a detailed
-      description of the possible parameters. You will have to at
-      least choose a driver with the <em>--with-driver=X</em>
-      option.
-    </P>
-
-    <P>There are three special drivers:</P>
-    <DL>
-      <DT>all</DT>
-      <DD>
-        will build multiple drivers into lircd and runtime selection
-        will be possible using the <em>--driver</em> option.  However,
-        not all drivers are included, so in some cases you will have
-        to select the appropriate driver and not <em>all</em>. This
-        option will also compile all available kernel modules. Some
-        kernel modules are only supported with recent kernel
-        versions. That means that compilation of these drivers might
-        fail with older kernel versions. If this happens for you, you
-        should consider using the <em>userspace</em> driver described
-        below and only compile the kernel modules that you need
-        separately.
-      </DD>
-
-      <DT>none</DT>
-      <DD>
-        will only let lircd talk to other lircd's though the network and
-        not to any local hardware.
-      </DD>
-
-      <DT>userspace</DT>
-      <DD>
-        behaves like the <em>all</em> driver option except that no
-        kernel modules will be built.
-      </DD>
-    </DL>
-
-    <P>
-      When running the configure script, please pay attention at its
-      output. At the end of the configuration checks, it will tell you
-      which kernel module (if any) will be required for your
-      hardware. You can also look up this information in the <A
-      HREF="table.html">device table</A>. After having configured the
-      package just type <em>make</em> and lean back.
-    </P>
-
-    <P>
-      <B>Note:</B> You won't find a configure script in the source repo
-      version of LIRC. You will have to generate it first by executing
-      <em>./autogen.sh</em>. You need at least libtool-1.3.3,
-      automake-1.4 and autoconf-2.13 to do this properly.
-    </P>
 
     <!-- Install LIRC ++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
@@ -251,12 +152,8 @@
 
     <P>
       Installing the compiled programs is really easy, just type
-      <em>make install</em>. All binaries and modules should be
-      installed at the usual places. The necessary devices should be
-      generated in the <em>/dev/</em> directory and all configuration
-      files should be copied to its proper destination if you happen
-      to use some hardware where configuration files are already
-      available.
+      <em>make install</em>. All binaries, modules pipes and
+      documentation should be installed at the usual places.
     </P>
 
     <P>
@@ -285,55 +182,36 @@
       should be started at system boot time and do their work in
       background. If you want to start them automatically at boot time
       you will have to add an init script for them to your
-      system. Unfortunately the syntax and location of this init
-      script is highly dependent on the distribution you use so you
-      will have to figure it out yourself how this works on your
-      system. Good news is that there already are some init scripts
-      available in the <em>contrib/</em> directory of the LIRC
-      package.
+      system. As distributed, lirc installs systemd services which should
+      be usable on many Linux systems. There is also various sysV init
+      files int the contrib directory which miht be useful in other
+      contexts.
     </P>
 
     <P>
       <B>Warning:</B> Never compile daemons with &quot;Disable
       daemonize&quot; turned on and place them in some init script
-      unless you have a rescue disc nearby...
+      unless you have a rescue disc nearby... (unless you are using
+      systemd, which handles this just fine.)
     </P>
 
     <P>
-      Now you should adjust the file permissions of
+      You might want to adjust the file permissions of
       <em>/var/run/lirc/lircd</em> (this is the Unix domain socket that clients
-      use to connect to lircd) so others than <em>root</em> can
-      connect to lircd.</P>
-    <PRE>
-        chmod 666 /var/run/lirc/lircd</PRE>
-    <P>
-      should do. You can also create a special group for this purpose.
+      use to connect to lircd). As distributed this is 666 i. e., anyone
+      can read and write. Edit /etc/lirc/lirc_options.conf to fix.
+      You can also create a special group for this purpose.
     </P>
-
-    <P>
-      If your hardware requires a kernel module you should make sure
-      that the kernel will find the correct module if a program tries
-      to access <em>/dev/lirc</em>. This can be done by inserting the
-      following line to your <em>/etc/conf.modules</em>
-      (<em>/etc/modules.conf</em> for current kernel versions):
-    </P>
-    <PRE>
-        alias char-major-61  lirc_driver</PRE>
-    <P>
-      Note that here <em>driver</em> is a placeholder for the actual
-      driver you are using (serial, parallel, etc.).
-    </P>
-
     <P>
       If your driver requires some special parameters to work you can
-      specify them at the same place. For example you can set the IRQ
-      and I/O base the serial port drivers shall use by adding the
-      following line to <em>/etc/conf.modules</em>:</P>
+      specify them  in a modprobe.d config file. lirc-setup creates
+      such a file in certain cases, typically for setting irq
+      and I/O base. It might look something like:
     <PRE>
         options lirc_serial irq=4 io=0x3e8</PRE>
     <P>
-      This will override the default values you have selected during setup.
-      The configure script will tell you which kernel module you need.
+      This will override the kernel builtin default values. The
+      command modinfo(8) is ueful to investigate module options.
     </P>
 
     <P>
@@ -447,7 +325,8 @@
         0000000000718ef0 00 RED_BUTTON_UP ANIMAX</PRE>
     <P>
       If the driver test did work, but you now see nothing, then check
-      <em>/var/log/lircd</em>. If you still see nothing suspicious
+      <em>/var/log/lircd</em>, your syslog or journalctl depending on
+      your system. If you still see nothing suspicious
       compile lircd in DEBUG mode and look at the log file again. In
       debug mode lircd has an additional command line option that lets
       you choose the detail level of debug information.
@@ -495,67 +374,6 @@
         <BR>
       </LI>
     </UL>
-
-    <!-- Module specific information +++++++++++++++++++++++++++++++++++++ -->
-
-    <A NAME="specific"></A><HR>
-    <H1 ALIGN="CENTER">Module specific information</H1>
-    <HR WIDTH="70%">
-
-    <H3>lirc_gpio</H3>
-
-    <P>
-      This module receives scan codes from the GPIO register of bt8[47]8
-      chips using polling or interrupts if the card supports this. It is a
-      &quot;plugin&quot; for the <em>lirc_dev</em> module. It loads
-      <em>bttv</em> and <em>lirc_dev</em> modules if they are not
-      loaded yet.<BR>
-    </P>
-
-    <P>
-      The following gives a list of parameters for the module. If your
-      TV card is already listed as supported than you don't need to
-      care about parameters except <em>debug</em> and <em>card</em>
-      because all other are set to the correct values
-      automatically. Setting the values manually only makes sense
-      while adding support for a new TV card so that you don't have to
-      recompile the module each time you try a different value.
-    </P>
-    <UL>
-      <LI><B>debug</B> (0) - value other than 0 (zero) enables
-        printing more log messages</LI>
-      <LI><B>card</B> (0) - number of TV card from which receive scan
-        codes</LI>
-      <LI><B>minor</B> (-1) - minor device number for
-        /dev/lirc device</LI>
-      <LI><B>gpio_mask</B> (0) - bit mask used for extracting usable
-        bits from GPIO value<BR> If this parameter is equal to 0 then
-        the module tries to autodetect the TV card and the remaining
-        parameters are ignored.</LI>
-      <LI><B>gpio_lock_mask</B> (0) - if this value &quot;anded&quot;
-        with GPIO value is non zero than it indicates that scan code
-        is not ready (value of 0 of this parameter disables
-        checking)</LI>
-      <LI><B>gpio_xor_mask</B> (0) - bitmask applied (by xor
-        operation) to GPIO value before lock_mask is checked</LI>
-      <LI><B>soft_gap</B> (0) - minimal gap (in milliseconds) between
-        two scan codes (value of 0 disables checking)</LI>
-      <LI><B>sample_rate</B> (10) - how often (times per second) GPIO
-        will be polled, set to 0 for interrupt driven input</LI>
-      <LI><B>bttv_id</B> (unknown) - force given bttv id, signals from
-        some cards are translated to match original codes</LI>
-    </UL>
-    <P>
-      Usage example would be e.g:
-    </P>
-    <em>modprobe lirc_gpio gpio_mask=0x1f00 gpio_lock_mask=0x8000 gpio_xor_mask=0 soft_gap=400 sample_rate=12</em>
-    <P>
-      Autodetection is performed using the API from the <em>bttv</em>
-      module - this means that if <em>bttv</em> doesn't properly
-      recognize the card type the remote control won't work.
-    </P>
-
-    <!-- Updating from lirc-0.5.4 ++++++++++++++++++++++++++++++++++++++++ -->
 
     <A NAME="updating054"></A><HR>
     <H1 ALIGN="CENTER">Updating from lirc-0.5.4</H1>
@@ -798,3 +616,40 @@ lirc_serial: Unknown symbol lirc_register_driver
       <em>lirc_mceusb2</em> driver is now obsolete and has been
       removed. You should use <em>lirc_mceusb</em> from now on.
     </P>
+    <A NAME="updating091"></A><HR>
+    <H1 ALIGN="CENTER">Updating from lirc-0.9.1</H1>
+    <HR WIDTH="70%">
+    <p>
+     All kernel modules are removed from lirc. Most (but not all) are
+     part of the regular Linux kernel or in the staging drivers area -
+     the net result is that you should be able to use the modules
+     without compiling them together with lirc in most cases.
+    </p>
+    <p>
+     From this version user-space drivers are loaded dynamically on-demand.
+     From an installation point of view this means that programs such
+     as lircd needs to know the path to the directory where the
+     compiled drivers lives. See e. g., the lircd manpage's section on
+     DRIVER LOADING.
+    </p>
+    <p>
+     In previous versions the setup.sh script was used to determine how to
+     build lirc to support a specific remote. This script is now
+     obsoleted, and lirc is always built with all available user-space
+     drivers. Instead of this script just use autoreconf -fi; configure ...
+     (see Installation above).
+    <p>
+     Earlier versions of lirc has been agnostic to init systems in different
+     distributions. This version has explicit support for systemd. This
+     should not break existing setups using sysV init scripts though. New
+     configuration file lirc_options.conf also opens new ways to configure
+     lirc, but will not break existing installation relying on command line
+     options.
+    </p>
+     <p>
+     From this version new scripts lirc-setup and lirc-install-configuration
+     aids in the process to configure lirc for a particular remote. These
+     partly replaces the old setup.sh script, but applies to the installed
+     lirc rather than how to build it.
+     </p>
+
