@@ -1,0 +1,196 @@
+#
+# contributed by Eric Anderson
+#
+# brand: Sony PCVA-IR5U IR Receiver
+#
+
+
+#
+# Sony Gigapocket Remote "RM-GP4U"
+#
+
+begin remote
+  name  RM-GP4U
+  bits           32
+  eps            30
+  aeps          100
+
+  one             0     0
+  zero            0     0
+  gap          211982
+  toggle_bit      0
+
+  begin codes
+
+# Mode 1
+        KEY_VOLUMEUP            0x1ab212
+        KEY_VOLUMEDOWN          0x1ab213
+        KEY_CHANNELUP           0x1ab210
+        KEY_CHANNELDOWN         0x1ab211
+        KEY_MUTE                0x1ab214
+###     KEY_STANDBY             <special 1-byte code>
+        KEY_1                   0x1ab200
+        KEY_2                   0x1ab201
+        KEY_3                   0x1ab202
+        KEY_4                   0x1ab203
+        KEY_5                   0x1ab204
+        KEY_6                   0x1ab205
+        KEY_7                   0x1ab206
+        KEY_8                   0x1ab207
+        KEY_9                   0x1ab208
+        KEY_0                   0x1ab23e
+        X_KEY_JUMP              0x1ab23d                  #  Was: KEY_JUMP
+        KEY_ENTER               0x1ab23f
+
+        KEY_MENU                0x1ab243
+        X_KEY_START             0x1ab244                  #  Was: KEY_START
+        KEY_CLOSE               0x1ab245
+        X_KEY_FUNCTION          0x1ab227                  #  Was: KEY_FUNCTION
+        X_KEY_SIZE              0x1ab225                  #  Was: KEY_SIZE
+        KEY_AUDIO               0x1ab22b
+
+        KEY_ANGLE               0x1ab239
+        KEY_SUBTITLE            0x1ab229
+        KEY_DISPLAY             0x1ab226
+        X_KEY_TV_VIDEO          0x1ab224                  #  Was: KEY_TV_VIDEO
+
+        KEY_RECORD              0x1ab21d
+        X_KEY_REC_MODE          0x1ab228                  #  Was: KEY_REC_MODE
+        X_KEY_REC_STOP          0x1ab21e                  #  Was: KEY_REC_STOP
+
+        KEY_REWIND              0x1ab21b
+        KEY_FASTFORWARD         0x1ab21c
+        KEY_PREV                0x1ab21f
+        KEY_NEXT                0x1ab220
+
+        KEY_STOP                0x1ab218
+        KEY_PLAY                0x1ab21a
+        KEY_PAUSE               0x1ab219
+
+        KEY_MENU                0x1ab236
+        KEY_TITLE               0x1ab238
+        KEY_CANCEL              0x1ab235
+        X_KEY_RETURN            0x1ab237                  #  Was: KEY_RETURN
+
+        KEY_UP                  0x1ab230
+        KEY_DOWN                0x1ab231
+        KEY_LEFT                0x1ab232
+        KEY_RIGHT               0x1ab233
+        KEY_ENTER               0x1ab234
+
+# Mode 2
+        KEY_VOLUMEUP            0x1a3312
+        KEY_VOLUMEDOWN          0x1a3313
+        KEY_CHANNELUP           0x1a3310
+        KEY_CHANNELDOWN         0x1a3311
+        KEY_MUTE                0x1a3314
+        X_KEY_STANDBY           0x1a332c                  #  Was: KEY_STANDBY
+        KEY_1                   0x1a3300
+        KEY_2                   0x1a3301
+        KEY_3                   0x1a3302
+        KEY_4                   0x1a3303
+        KEY_5                   0x1a3304
+        KEY_6                   0x1a3305
+        KEY_7                   0x1a3306
+        KEY_8                   0x1a3307
+        KEY_9                   0x1a3308
+        KEY_0                   0x1a333e
+        X_KEY_JUMP              0x1a333d                  #  Was: KEY_JUMP
+        KEY_ENTER               0x1a333f
+
+        KEY_MENU                0x1a3343
+        X_KEY_START             0x1a3344                  #  Was: KEY_START
+        KEY_CLOSE               0x1a3345
+        X_KEY_FUNCTION          0x1a3327                  #  Was: KEY_FUNCTION
+        X_KEY_SIZE              0x1a3325                  #  Was: KEY_SIZE
+        KEY_AUDIO               0x1a332b
+
+        KEY_ANGLE               0x1a3339
+        KEY_SUBTITLE            0x1a3329
+        KEY_DISPLAY             0x1a3326
+        X_KEY_TV_VIDEO          0x1a3324                  #  Was: KEY_TV_VIDEO
+
+        KEY_RECORD              0x1a331d
+        X_KEY_REC_MODE          0x1a3328                  #  Was: KEY_REC_MODE
+        X_KEY_REC_STOP          0x1a331e                  #  Was: KEY_REC_STOP
+
+        KEY_REWIND              0x1a331b
+        KEY_FASTFORWARD         0x1a331c
+        KEY_PREV                0x1a331f
+        KEY_NEXT                0x1a3320
+
+        KEY_STOP                0x1a3318
+        KEY_PLAY                0x1a331a
+        KEY_PAUSE               0x1a3319
+
+        KEY_MENU                0x1a3336
+        KEY_TITLE               0x1a3338
+        KEY_CANCEL              0x1a3335
+        X_KEY_RETURN            0x1a3337                  #  Was: KEY_RETURN
+
+        KEY_UP                  0x1a3330
+        KEY_DOWN                0x1a3331
+        KEY_LEFT                0x1a3332
+        KEY_RIGHT               0x1a3333
+        KEY_ENTER               0x1a3334
+
+# Mode 3
+        KEY_VOLUMEUP            0x1a3b12
+        X_KEY_VOLUNEDOWN        0x1a3b13                  #  Was: KEY_VOLUNEDOWN
+        KEY_CHANNELUP           0x1a3b10
+        KEY_CHANNELDOWN         0x1a3b11
+        KEY_MUTE                0x1a3b14
+        X_KEY_STANDBY           0x1a3b2c                  #  Was: KEY_STANDBY
+        KEY_1                   0x1a3b00
+        KEY_2                   0x1a3b01
+        KEY_3                   0x1a3b02
+        KEY_4                   0x1a3b03
+        KEY_5                   0x1a3b04
+        KEY_6                   0x1a3b05
+        KEY_7                   0x1a3b06
+        KEY_8                   0x1a3b07
+        KEY_9                   0x1a3b08
+        KEY_0                   0x1a3b3e
+        X_KEY_JUMP              0x1a3b3d                  #  Was: KEY_JUMP
+        KEY_ENTER               0x1a3b3f
+
+        KEY_MENU                0x1a3b43
+        X_KEY_START              0x1a3b44                  #  Was: KEY_START
+        KEY_CLOSE               0x1a3b45
+        X_KEY_FUNCTION          0x1a3b27                  #  Was: KEY_FUNCTION
+        X_KEY_SIZE              0x1a3b25                  #  Was: KEY_SIZE
+        KEY_AUDIO               0x1a3b2b
+
+        KEY_ANGLE               0x1a3b39
+        KEY_SUBTITLE            0x1a3b29
+        KEY_DISPLAY             0x1a3b26
+        X_KEY_TV_VIDEO          0x1a3b24                  #  Was: KEY_TV_VIDEO
+
+        KEY_RECORD              0x1a3b1d
+        X_KEY_REC_MODE          0x1a3b28                  #  Was: KEY_REC_MODE
+        X_KEY_REC_STOP          0x1a3b1e                  #  Was: KEY_REC_STOP
+
+        KEY_REWIND              0x1a3b1b
+        KEY_FASTFORWARD         0x1a3b1c
+        KEY_PREV                0x1a3b1f
+        KEY_NEXT                0x1a3b20
+
+        KEY_STOP                0x1a3b18
+        KEY_PLAY                0x1a3b1a
+        KEY_PAUSE               0x1a3b19
+
+        KEY_MENU                0x1a3b36
+        KEY_TITLE               0x1a3b38
+        KEY_CANCEL              0x1a3b35
+        X_KEY_RETURN            0x1a3b37                  #  Was: KEY_RETURN
+
+        KEY_UP                  0x1a3b30
+        KEY_DOWN                0x1a3b31
+        KEY_LEFT                0x1a3b32
+        KEY_RIGHT               0x1a3b33
+        KEY_ENTER               0x1a3b34
+  end codes
+
+end remote
+
+end remote

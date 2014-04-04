@@ -1,0 +1,184 @@
+#
+# contributed by Eric Anderson
+#
+# brand: Sony PCVA-IR5U IR Receiver
+#
+
+#
+# Sony Receiver Remote "RM-U304"
+#
+
+begin remote
+  name  RM-U304
+  bits           32
+  eps            30
+  aeps          100
+
+  one             0     0
+  zero            0     0
+  gap          211982
+  toggle_bit      0
+
+  begin codes
+        KEY_VOLUMEUP            0x100012
+        KEY_VOLUMEDOWN          0x100013
+        KEY_MUTE                0x100014
+
+        KEY_SLEEP               0x100060
+        KEY_POWER               0x100015
+
+# MODE SELECTS
+        KEY_VIDEO               0x100022
+        KEY_DVD                 0x10007d
+        X_KEY_TVSAT             0x10006a                  #  Was: KEY_TVSAT
+        X_KEY_MD_TAPE           0x100069                  #  Was: KEY_MD_TAPE
+        KEY_CD                  0x100025
+        KEY_TUNER               0x100021
+
+        X_KEY_INPUT              0x10025                   #  Was: KEY_INPUT
+
+# MODE VIDEO
+        KEY_1                   0x1c0000
+        KEY_2                   0x1c0001
+        KEY_3                   0x1c0002
+        KEY_4                   0x1c0003
+        KEY_5                   0x1c0004
+        KEY_6                   0x1c0005
+        KEY_7                   0x1c0006
+        KEY_8                   0x1c0007
+        KEY_9                   0x1c0008
+        KEY_0                   0x1c0014
+        KEY_ENTER               0x1c001b
+
+        KEY_PREV                0x1c0068
+        KEY_NEXT                0x1c0069
+        KEY_REWIND              0x1c003b
+        KEY_FASTFORWARD         0x1c003c
+        KEY_PLAY                0x1c003a
+        KEY_PAUSE               0x1c0039
+        KEY_STOP                0x1c0038
+
+        X_KEY_VIDEO_POWER       0x1c0015                  #  Was: KEY_VIDEO_POWER
+
+# MODE DVD/LD
+        KEY_MENU                0x1a491b
+        KEY_UP                  0x1a4979
+        KEY_DOWN                0x1a497a
+        KEY_LEFT                0x1a497b
+        KEY_RIGHT               0x1a497c
+        KEY_ENTER               0x1a490b
+        X_KEY_RETURN            0x1a490e                  #  Was: KEY_RETURN
+
+        KEY_PREV                0x1a4930
+        KEY_NEXT                0x1a4931
+        KEY_REWIND              0x1a4933
+        KEY_FASTFORWARD         0x1a4934
+        KEY_BACK                0x1a4954
+        KEY_PLAY                0x1a4932
+        KEY_PAUSE               0x1a4939
+        KEY_STOP                0x1a4938
+        X_KEY_DISK_SKIP         0x1a493f                  #  Was: KEY_DISK_SKIP
+
+        X_KEY_DVD_POWER         0x1a4915                  #  Was: KEY_DVD_POWER
+
+# MODE TV SAT
+        KEY_1                   0x10000
+        KEY_2                   0x10001
+        KEY_3                   0x10002
+        KEY_4                   0x10003
+        KEY_5                   0x10004
+        KEY_6                   0x10005
+        KEY_7                   0x10006
+        KEY_8                   0x10007
+        KEY_9                   0x10008
+        KEY_0                   0x10009
+        X_KEY_>10               0x1001d                   #  Was: KEY_>10
+        KEY_ENTER               0x1008b
+
+        X_KEY_AV_POWER          0x10015                   #  Was: KEY_AV_POWER
+
+        KEY_CHANNELUP           0x10010
+        KEY_CHANNELDOWN         0x10011
+
+# MODE MD/TAPE
+        KEY_1                   0xf0000
+        KEY_2                   0xf0001
+        KEY_3                   0xf0002
+        KEY_4                   0xf0003
+        KEY_5                   0xf0004
+        KEY_6                   0xf0005
+        KEY_7                   0xf0006
+        KEY_8                   0xf0007
+        KEY_9                   0xf0008
+        KEY_0                   0xf0009
+        X_KEY_>10               0xf000a                   #  Was: KEY_>10
+        KEY_ENTER               0xf003b
+
+        KEY_PREV                0xf0020
+        KEY_NEXT                0xf0021
+        KEY_REWIND              0xf002b
+        KEY_FASTFORWARD         0xf002c
+        KEY_PLAY                0xf002a
+        KEY_PAUSE               0xf0029
+        KEY_STOP                0xf0028
+
+        X_KEY_MD_TAPE_POWER     0xf0015                   #  Was: KEY_MD_TAPE_POWER
+
+# MODE CD
+        KEY_1                   0xe0000
+        KEY_2                   0xe0001
+        KEY_3                   0xe0002
+        KEY_4                   0xe0003
+        KEY_5                   0xe0004
+        KEY_6                   0xe0005
+        KEY_7                   0xe0006
+        KEY_8                   0xe0007
+        KEY_9                   0xe0008
+        KEY_0                   0xe0009
+        X_KEY_>10               0xe0027                   #  Was: KEY_>10
+        KEY_ENTER               0xe000a
+
+        KEY_REWIND              0x100033
+        KEY_FASTFORWARD         0x100034
+        KEY_BACK                0x100037
+        KEY_PLAY                0x100032
+        KEY_PAUSE               0x100039
+        KEY_STOP                0x100038
+
+        X_KEY_CD_POWER          0xe0015                   #  Was: KEY_CD_POWER
+
+# MODE TUNER
+        KEY_1                   0xd0000
+        KEY_2                   0xd0001
+        KEY_3                   0xd0002
+        KEY_4                   0xd0003
+        KEY_5                   0xd0004
+        KEY_6                   0xd0005
+        KEY_7                   0xd0006
+        KEY_8                   0xd0007
+        KEY_9                   0xd0008
+        KEY_0                   0xd0009
+        X_KEY_>10               0xd0033                   #  Was: KEY_>10
+        KEY_ENTER               0xd0053
+
+        KEY_CHANNELUP           0xd0010
+        KEY_CHANNELDOWN         0xd0011
+
+# Audio Controls
+        X_KEY_AFD               0x100447                  #  Was: KEY_AFD
+        X_KEY_2CH               0x100441                  #  Was: KEY_2CH
+        KEY_MODE                0x10046e
+
+        X_KEY_EQ_TONE           0x10044c                  #  Was: KEY_EQ_TONE
+        X_KEY_BASS_BOOST        0x10044d                  #  Was: KEY_BASS_BOOST
+        X_KEY_TEST_TONE         0x10044a                  #  Was: KEY_TEST_TONE
+        X_KEY_CURSOR_MODE       0x100477                  #  Was: KEY_CURSOR_MODE
+
+        X_KEY_MENU_LEFT         0x100472                  #  Was: KEY_MENU_LEFT
+        X_KEY_MENU_RIGHT        0x100473                  #  Was: KEY_MENU_RIGHT
+        X_KEY_-                 0x100474                  #  Was: KEY_-
+        X_KEY_+                 0x100475                  #  Was: KEY_+
+
+  end codes
+
+end remote

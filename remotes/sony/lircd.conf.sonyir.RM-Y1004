@@ -1,0 +1,108 @@
+#
+# contributed by Eric Anderson
+#
+# brand: Sony PCVA-IR5U IR Receiver
+#
+
+#
+# Sony TV Remote "RM-Y1004"
+#
+
+begin remote
+  name  RM-Y1004
+  bits           32
+  eps            30
+  aeps          100
+
+  one             0     0
+  zero            0     0
+  gap          211982
+  toggle_bit      0
+
+  begin codes
+        KEY_VOLUMEUP            0x100212
+        KEY_VOLUMEDOWN          0x100213
+
+# TV
+        KEY_UP                  0x10074
+        KEY_DOWN                0x10075
+        KEY_LEFT                0x10034
+        KEY_RIGHT               0x10033
+        KEY_ENTER               0x10065
+        KEY_1                   0x10000
+        KEY_2                   0x10001
+        KEY_3                   0x10002
+        KEY_4                   0x10003
+        KEY_5                   0x10004
+        KEY_6                   0x10005
+        KEY_7                   0x10006
+        KEY_8                   0x10007
+        KEY_9                   0x10008
+        KEY_0                   0x10009
+        KEY_ENTER               0x1000b
+        X_KEY_.                 0x17041d                  #  Was: KEY_.
+        X_KEY_ANTENNA           0x10024                   #  Was: KEY_ANTENNA
+        X_KEY_TV_VIDEO          0x10025                   #  Was: KEY_TV_VIDEO
+        X_KEY_TV_POWER          0x10015                   #  Was: KEY_TV_POWER
+        X_KEY_RESET             0x10016                   #  Was: KEY_RESET
+        X_KEY_MTS               0x10017                   #  Was: KEY_MTS
+
+# DVD/VCR
+        KEY_UP                  0x101078
+        KEY_DOWN                0x101079
+        KEY_LEFT                0x10107a
+        KEY_RIGHT               0x10107b
+        KEY_ENTER               0x10107c
+        KEY_1                   0x101000
+        KEY_2                   0x101001
+        KEY_3                   0x101002
+        KEY_4                   0x101003
+        KEY_5                   0x101004
+        KEY_6                   0x101005
+        KEY_7                   0x101006
+        KEY_8                   0x101007
+        KEY_9                   0x101008
+        KEY_0                   0x101009
+        KEY_ENTER               0x10100c
+        X_KEY_DVD_POWER         0x100215                  #  Was: KEY_DVD_POWER
+
+        KEY_PLAY                0x100602
+        KEY_REWIND              0x101033
+        KEY_FASTFORWARD         0x101034
+        KEY_PAUSE               0x100601
+        KEY_STOP                0x100600
+
+# SAT/CABLE
+        KEY_UP                  0x170572
+        KEY_DOWN                0x170573
+        KEY_LEFT                0x170575
+        KEY_RIGHT               0x170574
+        KEY_ENTER               0x170576
+        KEY_1                   0x170500
+        KEY_2                   0x170501
+        KEY_3                   0x170502
+        KEY_4                   0x170503
+        KEY_5                   0x170504
+        KEY_6                   0x170505
+        KEY_7                   0x170506
+        KEY_8                   0x170507
+        KEY_9                   0x170508
+        KEY_0                   0x170509
+        KEY_ENTER               0x17050b
+        X_KEY_SAT_POWER         0x170515                  #  Was: KEY_SAT_POWER
+
+        KEY_F1                  0x170431
+        KEY_F1                  0x100669
+        KEY_F2                  0x10103e
+        X_KEY_POWER_SAVING      0x170336                  #  Was: KEY_POWER_SAVING
+        X_KEY_SOUND_MODE        0x17047b                  #  Was: KEY_SOUND_MODE
+        KEY_SOUND               0x4051f
+        X_KEY_SPLIT             0x40577                   #  Was: KEY_SPLIT
+
+        X_KEY_GUIDE             0x1000e                   #  Was: KEY_GUIDE
+        X_KEY_RESET             0x10016                   #  Was: KEY_RESET
+        X_KEY_GUIDE             0x101019                  #  Was: KEY_GUIDE
+        KEY_FAVORITES           0x170376
+  end codes
+
+end remote
