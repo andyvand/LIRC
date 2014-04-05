@@ -20,6 +20,10 @@ select_vars ()
                 MANPAGE=$PROG.$SECTION
                 DIR=$TOPDIR/tools/
         ;;
+        lirc-setup)
+                MANPAGE=$PROG.$SECTION
+                DIR=$SRCDIR/wrappers/
+        ;;
         irxevent)
                 MANPAGE=$PROG.$SECTION
                 DIR=$TOPDIR/tools/
@@ -102,17 +106,27 @@ for PROG in "$@"; do
         PROG_PARAMS=""
         PROG_PRE_PARAMS=""
         select_vars $PROG
-        test "man/${MANPAGE:-foo}" -nt "${SRCDIR}/man-source/$PROG.inc" \
+        test -f "${SRCDIR}/man-source/$PROG.inc" && \
+            test "man/${MANPAGE:-foo}" -nt "${SRCDIR}/man-source/$PROG.inc" \
                 && continue
         #make the manpage
-        $HELP2MAN \
-                $PROG_PRE_PARAMS \
-                --section $SECTION \
-                --no-info \
-                --include ${SRCDIR}/man-source/help2man.inc \
-                --opt-include ${SRCDIR}/man-source/$PROG.inc \
-                $PROG_PARAMS \
-                $DIR$PROG -o man/$MANPAGE
+        case $PROG in
+            *lirc-config-tool)
+                cp man-source/lirc-config-tool.1 man
+                MANPAGE=lirc-config-tool.1
+                PROG=${MANPAGE%.*}
+                ;;
+            *)
+                $HELP2MAN \
+                    $PROG_PRE_PARAMS \
+                    --section $SECTION \
+                    --no-info \
+                    --include ${SRCDIR}/man-source/help2man.inc \
+                    --opt-include ${SRCDIR}/man-source/$PROG.inc \
+                    $PROG_PARAMS \
+                    $DIR$PROG -o man/$MANPAGE
+                ;;
+        esac
 
         # since libtool is used help2man prepends "lt-" to some executable
         # names, we could require lirc to be installed and this wouldn't

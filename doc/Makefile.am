@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 ACLOCAL_AMFLAGS         = -I m4
 
-EXTRA_DIST              = release-html.sh release-man.sh table.sh
+EXTRA_DIST              = release-html.sh release-man.sh data2table data2hwdb
 DISTCLEANFILES          = man/* html/* man-html/* lirc.hwdb
 noinst_PROGRAMS         = man2html
 
@@ -21,11 +21,11 @@ generated_html          += html/smode2.html
 endif
 
 docdir                  = @datadir@/doc/@PACKAGE@
-dist_doc_DATA           = lirc.css irxevent.keys
+dist_doc_DATA           = irxevent.keys
 
 htmldir                 = $(docdir)/html
 nodist_html_DATA        = $(generated_html)
-dist_html_DATA          = $(html_includes)
+dist_html_DATA          = $(html_includes) html-source/lirc.css
 
 dist_noinst_DATA        = $(man_sources) $(html_sources)
 
@@ -40,8 +40,8 @@ $(generated_html): $(nodist_man_MANS)
 $(nodist_man_MANS): $(man_sources) man2html
 	test -d man || mkdir man
 	top_srcdir="$(top_srcdir)" srcdir="$(srcdir)" \
-	        builddir="$(builddir)"  top_builddir="$(top_builddir)" \
-	        $(srcdir)/release-man.sh $(nodist_man_MANS)
+	    builddir="$(builddir)"  top_builddir="$(top_builddir)" \
+	    $(srcdir)/release-man.sh $(nodist_man_MANS)
 
 $(nodist_html_DATA) : $(html_sources) $(nodist_man_MANS)
 	test -d html || mkdir html
@@ -49,12 +49,11 @@ $(nodist_html_DATA) : $(html_sources) $(nodist_man_MANS)
 	    builddir="$(builddir)" top_builddir="$(top_builddir)" \
 	    $(srcdir)/release-html.sh
 	cp $(srcdir)/html-source/lirc.css html
-
 lirc.hwdb: html/table.html
 html/table.html:
 	test -d html || mkdir html
 	destdir=$$PWD; cd $(srcdir); \
-	    ./data2table ./hardware.yaml > $$destdir/html/table.html; \
+	    ./data2table ./hardware.yaml > $$destdir/html/table.html;\
 	    ./data2hwdb  ./hardware.yaml > $$destdir/lirc.hwdb
 
 
@@ -77,12 +76,14 @@ man_sources             =  man-source/daemons.inc \
                            man-source/help2man.inc \
                            man-source/irrecord.inc \
                            man-source/lircd.inc \
+                           man-source/lirc-setup.inc \
                            man-source/mode2.inc \
                            man-source/smode2.inc \
                            man-source/ircat.inc \
                            man-source/irsend.inc \
                            man-source/lircmd.inc \
-                           man-source/xmode2.inc
+                           man-source/xmode2.inc \
+                           man-source/lirc-config-tool.1
 
 html_sources            =  html-source/alsa-usb.html \
                            html-source/atwf83.html \
@@ -112,7 +113,9 @@ nodist_man_MANS         += man/irexec.1 \
                            man/lircmd.8 \
                            man/lircrcd.1 \
                            man/mode2.1 \
-                           man/irsend.1
+                           man/irsend.1 \
+                           man/lirc-config-tool.1 \
+                           man/lirc-setup.1
 
 generated_html          += html/alsa-usb.html \
                            html/audio-alsa.html \
@@ -137,6 +140,8 @@ generated_html          += html/alsa-usb.html \
                            html/mode2.html \
                            html/programs.html \
                            html/pronto2lirc.html \
+                           html/lirc-config-tool.html \
+                           html/lirc-setup.html \
                            html/table.html \
                            html/technical.html \
                            html/tira.html
