@@ -1,5 +1,4 @@
 # Mostly auto-generated build cruft
-lirc.pc
 lirc-driver.pc
 core*
 *.la

@@ -1,0 +1,12 @@
+#/bin/bash
+#
+# Setup some version filtering.
+#
+
+here=$( dirname $(readlink -fn $0))
+
+git config --get filter.fix_version.smudge > /dev/null || {
+    git config --local filter.fix_version.smudge $here/version-smudge
+    git config --local filter.fix_version.clean $here/version-clean
+}
+

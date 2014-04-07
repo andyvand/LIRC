@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# Version filter, can also be used with file argument.
+#
+
+commit=$( git rev-parse --short HEAD )
+isodate=$( git show -s --pretty=format:%ci HEAD )
+
+sed -r ${1:+'-i'} -e "s/@commit@/$commit/" \
+                  -e "s/@date@/$isodate/" \
+                  -e "/AC_INIT/s/-git/-$commit/" \
+                  -e "/^Version:/s/-git/-$commit/" \
+                  -e "1,3 s/-git:/-$commit:/"  $1

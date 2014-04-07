@@ -9,6 +9,8 @@ libdir=@libdir@
 includedir=@includedir@
 pkgdatadir=@datadir@/lirc
 plugindir=${libdir}/lirc/plugins
+commit=@commit@
+date=@date@
 
 Libs: -llirc
 Cflags: -I${includedir}

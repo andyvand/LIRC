@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# Version filter, can also be used with file argument.
+#
+
+sed -r ${1:+'-i'} -e '/commit=/s/=.*/=@commit@/'  \
+                  -e '/date=/s/=.*/=@date@/'  \
+                  -e '/AC_INIT/s/[-][0-9a-f]{7}/-git/' \
+                  -e '/^Version:/s/[0-9a-f]{7}/git/' \
+                  -e '1,3 s/\-[0-9a-f]{7}:/-git:/' $1

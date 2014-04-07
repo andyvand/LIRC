@@ -1,0 +1,4 @@
+lirc.pc        filter=fix_version
+configure.ac   filter=fix_version
+NEWS           filter=fix_version
+
