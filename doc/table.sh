@@ -12,7 +12,15 @@ SETUP_DATA="${TOP_SRCDIR}/setup.data"
 . ${TOP_SRCDIR}/setup-functions.sh
 
 rm -f $HEURISTIC
-cat $CONFIGDIR/*.conf  > ${HEURISTIC}
+cat > $HEURISTIC << EOF
+  lirc_driver=""
+  hw_module=""
+  HW_DEFAULT=""
+  lircd_conf=""
+  lircmd_conf=""
+EOF
+
+cat $CONFIGDIR/*.conf  >> ${HEURISTIC}
 
 cat << HWDB_HEADER > "${HWDB}"
 # LIRC - Hardware DataBase
@@ -35,7 +43,7 @@ cat ${HTML_SOURCE}/head.html
 echo "<table border=\"1\">"
 echo "<tr><th>Hardware</th><th>configure --with-driver option</th><th>Required LIRC kernel modules</th><th>lircd driver</th><th>default lircd and lircmd config files</th><th>Supported remotes</th></tr>"
 grep ".*: \(\".*\"\)\|@" ${SETUP_DATA} | while read REPLY; do
-    #echo $REPLY
+    # echo '<!--' $REPLY '-->'
 
     if echo $REPLY|grep ": @any" >/dev/null; then
         continue;
