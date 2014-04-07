@@ -1,0 +1,1150 @@
+#
+# lirc hardware database
+#
+# This file is a successor of the previous setup.data. It contains alist of
+# all remotes and an hierarchical menu structure.
+#
+# The menu entries are simple: either a list submenus or a list of configuration
+# items.
+#
+# The remote definitions should hopefully be intuitive. Entries starting with
+# run_ refers to items which are determined by code when running setup.
+#
+lirc:
+    remotes:
+        accent: &accent
+           label:          Kanam  Accent
+           driver:         accent
+           lircd_conf:     kanam_accent/lircd.conf.IR-100
+           mod_init:       run_select_tty tty1
+           device:         /dev/lirc0
+           supports:       bundled
+
+        act200l: &act200l
+           label:          Actisys  Act200L SIR driver support
+           lircd_conf:     run_select_any_config
+           modules:        [lirc_dev, lirc_sir]
+           modinit:        run_select_module_tty com1 lirc_sir
+           driver:         default
+           device:         /dev/lirc0
+           supports:       any
+
+        act220l: &act220l
+           label:          Actisys Act220L(+) SIR driver support
+           lircd_conf:     run_select_any_config
+           modules:        [lirc_dev, lirc_sir]
+           modinit:        run_select_module_tty com1 lirc_sir
+           driver:         default
+           device:         /dev/lirc0
+           supports:       any
+
+        adaptec: &adaptec
+           label:          Adaptec AVC-2410
+           lircd_conf:     adaptec/lircd.conf.AVC-2410
+           modules:        [lirc_dev, lirc_i2c]
+           driver:         default
+           device:         /dev/lirc0
+           supports:       bundled
+
+        alsa_usb: &alsa_usb
+            label:          Sound Blaster Extigy/Audigy 2 NX (ALSA snd-usb-audio)
+            lircd_conf:     creative/lircd.conf.alsa_usb
+            driver:         alsa_usb
+            device:         default
+            supports:       bundled
+
+        animax: &animax
+            label:          Anir Multimedia Magic
+            lircd_conf:     animax/lircd.conf.animax
+            lircmd_conf:    animax/lircmd.conf.animax
+            mod_init:       run_select_module_tty com1 lirc_serial
+            modules:        [lircd_dev, lirc_serial]
+            device:         /dev/lirc0
+            supports:       any
+
+        asusdh: &asusdh
+            label:          Asus DH USB Remote
+            lircd_conf:     asus/lircd.conf.asusdh
+            device:         run_select_tty
+            driver:         asusdh
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+
+        atilibusb: &atilibusb
+            label:          ATI/NVidia/X10 RF Remote (userspace)
+            lirc_config:    atiusb/lircd.conf.atilibusb
+            conflicts:      [lirc_atiusb]
+            driver:         atilibusb
+            supports:       bundled
+
+        atiusb: &atiusb
+            label:          ATI/NVidia/X10  I & II RF Remote
+            lirc_config:    atiusb/lircd.conf.atiusb
+            modules:        [lirc_dev, lirc_atiusb]
+            driver:         default
+            device:         run_select_usb_tty
+            supports:       bundled
+
+        atwf83: &atwf83
+            label:          Aureal ATWF@83-W001 ESKY.CC remote
+            lircd_conf:     aureal/lircd.conf.atwf83
+            driver:         atwf83
+            device:         /dev/hidraw0
+            supports:       bundled
+
+        audio: &audio
+            label:          Receiver/transmitter using PortAudio (EXPERIMENTAL)
+            driver:         audio
+            device:         default
+            supports:       any
+
+        audio_alsa: &audio_alsa
+            label:          :IR receiver IC connected to audio input using ALSA (EXPERIMENTAL)
+            driver:         :audio_alsa
+            device:         :default
+            supports:       :any
+
+        avermedia: &avermedia
+            label:          AverMedia TV card (TVCapture, TVPhone) (card=6)
+            lircd_conf:     avermedia/lircd.conf.avermedia
+            lircmd_conf:    avermedia/lircd.conf.avermedia
+            modules:        [lirc_dev, lirc_gpio]
+            device:         /dev/lirc0
+            support:        bundled
+
+        avermedia98: &avermedia98
+            label:          AverMedia TV card (TVCapture, TVPhone) (card=6)
+            lircd_conf:     avermedia/lircd.conf.avermedia98
+            lircmd_conf:    avermedia/lircd.conf.avermedia98
+            modules:        [lirc_dev, lirc_gpio]
+            device:         /dev/lirc0
+            support:        bundled
+
+        avermedia_vdomate: &avermedia_vdomate
+            label:          TV card (VDOMATE) (use card=13)
+            lircd_conf:     avermedia/lircd.conf.vdomate
+            modules:        [lirc_dev, lirc_gpio]
+            device:         /dev/lirc0
+            support:        bundled
+
+        awlibusb: &awlibusb
+            label:          Awox RF/IR Remote (userspace)
+            lircd_conf:     awlibusb/lircd.conf.awlibusb
+            driver:         awlibusb
+            device:         run_select_usb_tty
+            supports:       bundled
+
+        bestbuy: &bestbuy
+            label:          BestBuy Easy TV (BT848) (card=55)
+            lircd_conf:     bestbuy/lircd.conf.bestbuy
+            lircmd_conf:    bestbuy/lircmd.conf.bestbuy
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        bestbuy2: &bestbuy2
+            label:          BestBuy Easy TV (BT878) (card=62)
+            lircd_conf:     bestbuy/lircd.conf.bestbuy2
+            lircmd_conf:    bestbuy/lircmd.conf.bestbuy2
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        breakoutbox: &breakoutbox
+            label:          Creative BreakOut-Box
+            lircd_conf:     creative/lircd.conf.breakoutbox
+            modules:        [lirc_dev, lirc_gpio]
+            modinit:        run_select_module_tty lirc_gpio
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        bte: &bte
+            label:          Ericsson mobile phone via Bluetooth
+            driver:         bte
+            lircd_conf:     ericsson/lircd.conf.bte
+            device:         /dev/btty0
+            supports:       N/A
+
+        bw6130: &bw6130
+            label:          Remotec Multimedia PC Remote BW6130
+            lircd_conf:     remotec/lircd.conf.BW6130
+            driver:         bw6130
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+
+        caraca: &caraca
+            label:          CARACA
+            driver:         caraca
+            lircd_conf:     caraca/lircd.conf.caraca
+            device:         default
+            supports:       N/A
+
+        chronos: &chronos
+            label:          Chronos  Video Shuttle II (card=35)
+            lircd_conf:     chronos/lircd.conf.chronos
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        commandir: &commandir
+            label:          CommandIR Multi-IR Transceiver (userspace)
+            lircd_conf:     hauppauge/lircd.conf.hauppauge
+            lircmd_conf:    hauppauge/lircmd.conf.hauppauge
+            driver:         commandir
+            device:         run_select_usb_tty
+            supports:       any
+
+        cph03x_askey: &cph03x_askey
+            label:          Askey  Magic TView CPH03x (card=1)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        cph03x_dynalink: &cph03x_dynalink
+            label:          Dynalink  Magic TView (card=48)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        cph03x_trifan: &cph03x_trifan
+            label:          TriTan Technology TView95 CPH03x (card=1)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        cph06x_askey: &cph06x_askey
+            label:          Askey/Typhoon/Anubis Magic TView CPH051/061 (bt878) (card=24)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        cph06x_phoebe: &cph06x_phoebe
+            label:          Phoebe  Tv Master + FM (card=22)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        cph06x_tview: &cph06x_tview
+            label:          TView99  CPH063 (card=38)
+            lircd_conf:     cph03x/lircd.conf.cph03x
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        creative: &creative
+            label:          Creative  Infra Receiver/CIMR100
+            driver:         creative
+            lircd_conf:     creative/lircd.conf.creative
+            device:         run_select_tty com1
+            supports:       bundled
+
+        creative_infracd: &creative_infracd
+            label:          Creative  iNFRA CDROM
+            driver:         creative_infracd
+            lircd_conf:     creative/lircd.conf.infracd
+            supports:       bundled
+
+        dfclibusb: &dfclibusb
+            label:          DFC  USB InfraRed Remote Control (userspace)
+            lircd_conf:     run_select_any_config
+            driver:         dfclibusb
+            device:         run_select_usb_tty
+            supports:       any
+
+        dsp: &dsp
+            label:          Simple IR diode (EXPERIMENTAL)
+            driver:         dsp
+            device:         /dev/dsp
+            supports:       any
+
+        dvico: &dvico
+            label:          DViCO  USB Remote
+            lircd_conf:     dvico/lircd.conf.fusionHDTV
+            driver:         dvico
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+            product_id:     0fe9:9010
+
+        ea65: &ea65
+            label:          AOpen XC Cube EA65, EA65-II
+            driver:         ea65
+            lircd_conf:     ea65/lircd.conf.ea65
+            device:         run_select_tty tty2
+            supports:       bundled
+
+        flyvideo_2: &flyvideo_2
+            label:          FlyVideo  II (card=8)
+            lircd_conf:     life-view/lircd.conf.flyvideo
+            lircmd_conf:    life-view/lircmd.conf.flyvideo
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        flyvideo_98: &flyvideo_98
+            label:          FlyVideo  98 (card=3
+            lircd_conf:     life-view/lircd.conf.flyvideo
+            lircmd_conf:    life-view/lircmd.conf.flyvideo
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        flyvideo_98FM: &flyvideo_98FM
+            label:          FlyVideo 98/FM /2000S (card=56)
+            lircd_conf:     life-view/lircd.conf.flyvideo
+            lircmd_conf:    life-view/lircmd.conf.flyvideo
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+
+        flyvideo_FM_card36: &flyvideo_FM_card36
+            label:          Flyvideo 98FM (LR50Q)/Typhoon TView TV/FM Tuner (card=36)
+            lircd_conf:     life-view/lircd.conf.flyvideo
+            lircmd_conf:    life-view/lircmd.conf.flyvideo
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            supports:       bundled
+
+        ftdi: &ftdi
+            label:          FTDI  FT232-based IR Receiver
+            lircd_conf:     run_select_any_config
+            driver:         ftdi
+            device:         run_select_usb_tty
+            supports:       any
+
+        gvbctv5pci: &gvbctv5pci
+            label:          I-O
+            lircd_conf:     iodata/lircd.conf.gvbctv5pci
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        hauppauge: &hauppauge
+            label:          Hauppauge  TV card
+            lircd_conf:     hauppauge/lircd.conf.hauppauge
+            lircmd_conf:    hauppauge/lircmd.conf.hauppauge
+            modules:        [lirc_dev, lirc_i2c]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Devices using rc-5 protocol
+
+        hauppauge_hvr1300: &hauppauge_hvr1300
+            label:          Hauppauge  HVR-1300
+            lircd_conf:     hauppauge/lircd.conf.hauppauge
+            lircmd_conf:    hauppauge/lircmd.conf.hauppauge
+            modules:        [lirc_dev, lirc_i2c]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Devices using rc-5 protocol
+
+        hauppauge_dvb: &hauppauge_dvb
+            label:          Hauppauge DVB-s card (ver. 2.1)
+            lircd_conf:     hauppauge/lircd.conf.hauppauge
+            lircmd_conf:    hauppauge/lircmd.conf.hauppauge
+            modules:        [lirc_dev]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Devices using rc-5 protocol
+
+        hercules_smarttv_stereo: &hercules_smarttv_stereo
+            label:          Hercules Smart TV Stereo (card=100)
+            lircd_conf:     hercules/lircd.conf.smarttv_stereo
+            modules:        [lirc_dev]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        home_brew_parallel: &home_brew_parallel
+            label:          home-brew (parallel port)
+            modinit:        run_select_lpt_port lpt1 lirc_parallel with_custom
+            modules:        [lirc_dev, lirc_parallel]
+            lircd_conf:     run_select_any_config
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        home_brew_serial: &home_brew_serial
+            label:          Home brew (16x50 compatible UART serial port)
+            modules:        [lirc_dev, lirc_serial]
+            modinit:        run_select_module_tty com1 lirc_serial with_custom
+            lircd_conf:     run_select_any_config
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        livedrive_midi: &livedrive_midi
+            label:          Creative  LiveDrive midi
+            driver:         livedrive_midi
+            lircd_conf:     creative/lircd.conf.livedrive
+            device:         /dev/midi
+            supports:       bundled
+
+        livedrive_seq: &livedrive_seq
+            label:          Creative  LiveDrive sequencer
+            driver:         livedrive_seq
+            lircd_conf:     creative/lircd.conf.livedrive
+            device:         /dev/sequencer
+            supports:       bundled
+
+        i2cuser: &i2cuser
+            label:          User-space I2C driver
+            driver:         i2cuser
+            device:         /dev/i2c-0
+            supports:       bundled
+
+        imon_24g: &imon_24g
+            label:          Soundgraph  iMON 2.4G DT & LT
+            lirc_config:    imon/lircd.conf.imon-2.4g
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        imon: &imon
+            label:          Soundgraph  iMON MultiMedian IR/VFD
+            lircd_config:   imon/lircd.conf.imon
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        imon_lcd: &imon_lcd
+            label:          Soundgraph  iMON IR/LCD
+            lircd_config:   imon/lircd.conf.imon
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Usually only bundled
+
+        imon_knob: &imon_knob
+            label:          Soundgraph  iMON Knob
+            lircd_config:   imon/lircd.conf.imon-knob
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Usually only bundled
+
+        imon_pad: &imon_pad
+            label:          Soundgraph iMON PAD IR/VFD
+            lircd_config:   imon/lircd.conf.imon-pad
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Usually only bundled
+
+        imon_rsc: &imon_rsc
+            label:          Soundgraph  iMON RSC
+            lircd_config:   imon/lircd.conf.imon-rsc
+            modules:        [lirc_dev, lirc_imon]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       Usually only bundled
+
+        igorplugusb: &igorplugusb
+            label:          Igor Cesko's USB IR Receiver
+            modules:        [lirc_dev, lirc_igorplugusb]
+            modinit:        run_select_module_tty com1 lirc_igorplugusb
+            lircd_conf:     run_select_any_config
+            device:         /dev/lirc0
+            supports:       Devices using rc-5 protocol
+
+        iguanaIR: &iguanaIR
+            label:          Iguanaworks USB IR Transceiver
+            lircd_conf:     run_select_any_config
+            driver:         iguanaIR
+            device:         /var/run/iguanaIR/0
+            lircd_conf:     run_select_any_config
+            supports:       any
+            product_id:     1781:0938
+
+        irdeo: &irdeo
+            label:          IRdeo
+            lircd_conf:     run_select_any_config
+            mod_init:       run_select_module_tty com1 lirc_serial
+            modules:        [lirc_dev, lirc_serial]
+            device:         /dev/lirc0
+            driver:         default
+            supports:       any
+
+        irdeo_remote: &irdeo_remote
+            label:          IRdeo Remote
+            lircd_conf:     run_select_any_config
+            driver:         default
+            modules:        [lirc_dev, serial]
+            mod_init:       run_select_module_tty com1 lirc_serial
+            device:         /dev/lirc0
+            supports:       any
+
+        irlink: &irlink
+            label:          IRLink VS USB IR Receiver.
+            lircd_conf:     run_select_any_config
+            driver:         irlink
+            device:         run_select_usb_tty ttyUSB1
+            supports:       bundled
+
+        irman: &irman
+            label:          Irman / UIR
+            device:         run_select_tty com1
+            lircd_config:   run_select_any_config
+            driver:         irman
+            supports:       >
+                            any, but config file receiver specific, no
+                            transmit capability
+
+        knc_one: &knc_one
+            label:          KNC ONE TV Station (-/SE/PRO/RDS)
+            modules:        [lirc_dev, lirc_i2c]
+            lircd_conf:     knc_one/lircd.conf.knc_one
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        knc_one_typhoon: &knc_one_typhoon
+            label:          Typhoon  TView RDS / FM Stereo (card=53)
+            lircd_conf:     knc_one/lircd.conf.knc_one
+            modules:        [lirc_dev, lirc_i2c]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        kworld: &kworld
+            label:          Jetway TV/Capture JW-TV878-FBK, Kworld KW-TV878RF (card=78)
+            lircd_conf:     kworld/lircd.conf.kworld
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+            product_id:     0a01:17de
+
+        leadtek_pvr2000: &leadtek_pvr2000
+            label:          Winfast PVR2000
+            lircd_conf:     leadtek/lircd.conf.PVR2000
+            modules:        [lirc_dev, lirc_i2c]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        leadtek_0010: &leadtek_0010
+            label:          Winfast  TV2000/XP (card=34)
+            lircd_conf:     leadtek/lircd.conf.RM-0010
+            lircmd_conf:    leadtek/lircmd.conf.RM-0010
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        leadtek_0007: &leadtek_0007
+            label:          WinView  601 (card=17)
+            lircd_conf:     leadtek/lircd.conf.RM-0007
+            lircmd_conf:    leadtek/lircmd.conf.RM-0007
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        logitech: &logitech
+            label:          Logitech/AST
+            lircd_conf:     logitech/lircd.conf.logitech
+            lircmd_conf:    logitech/lircmd.conf.logitech
+            driver:         logitech
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        macmini: &macmini
+            label:          Apple  Mac mini USB IR Receiver
+            lircd_conf:     apple/lircd.conf.macmini
+            device:         run_select_tty
+            driver:         macmini
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+
+        mediafocusI: &mediafocusI
+            label:          Technisat MediaFocus I
+            lircd_conf:     technisat/lircd.conf.mediafocus
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        mouseremote: &mouseremote
+            label:          X10  MouseRemote RF Receiver (Serial)
+            driver:         moureremote
+            lircd_conf:     x10/lircd.conf.mouseremote
+            lircmd_conf:    x10/lircmd.conf.mouseremote
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        mouseremote_ps2: &mouseremote_ps2
+            label:          X10  MouseRemote RF Receiver (PS/2)
+            driver:         mouseremote_ps2
+            lircd_conf:     x10/lircd.conf.mouseremote
+            lircmd_conf:    x10/lircmd.conf.mouseremote
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        mp3anywhere: &mp3anywhere
+            label:          X10  MP3 Anywhere RF Receiver
+            driver:         mp3anywhere
+            lircd_conf:     x10/lircd.conf.mp3anywhere
+            lircmd_conf:    x10/lircmd.conf.mp3anywhere
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        mplay_blast: &mplay_blast
+            label:          VLSystem  MPlay Blast
+            lircd_config:   vlsystem/lircd.conf.mplay
+            driver:         mplay
+            device:         run_select_usb_tty ttyUSB1
+            supports:       bundled
+
+        mplay_mini: &mplay_mini
+            label:          VLSystem  MPlay Mini
+            lircd_config:   vlsystem/lircd.conf.mplay
+            driver:         mplay
+            device:         run_select_usb_tty ttyUSB1
+            supports:       bundled
+
+        none: &none
+            label:          Undefined hardware
+            driver:         none
+
+        nslu2: &nslu2
+            label:          Linksys NSLU2 (CTS2+GreenLED)
+            modules:        [lirc_dev, lirc_serial]
+            mod_init:       run_select_module_tty com1 lirc_serial
+            lircd_conf:     run_select_any_config
+            device:         /dev/lirc0
+            supports:       any
+
+        packard_bell: &packard_bell
+            label:          Packard  Bell receiver
+            driver:         default
+            lircd_conf:     packard_bell/lircd.conf.packard_be
+            modules:        [lirc_dev, lirc_serial]
+            mod_init:       run_select_module_tty com1 lirc_serial
+            lircd_conf:     run_select_any_config
+            device:         /dev/lirc0
+            supports:       any
+
+        pcmak: &pcmak
+            label:          PCMAK serial receiver
+            driver:         pcmak
+            lircd_conf:     pcmak/lircd.conf.pcmak
+            lircmd_conf:    pcmak/lircmd.conf.pcmak
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        pcmak_usb: &pcmak_usb
+            label:          PCMAK  USB receiver
+            lircd_conf:     pcmak/lircd.conf.pcmak
+            lircmd_conf:    pcmak/lircmd.conf.pcmak
+            driver:         pcmak
+            device:         run_select_usb_tty ttyUSB1
+            supports:       bundled
+
+        pctv_miro: &pctv_miro
+            label:          Miro PCTV serial receiver
+            driver:         pinsys
+            lircd_conf:     pinnacle_systems/lircd.conf.pctv
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        pctv: &pctv
+            label:          Pinnacle Systems TV-card receiver
+            driver:         pinsys
+            lircd_conf:     pinnacle_systems/lircd.conf.pctv
+            supports:       bundled
+
+        pctv_sat: &pctv_sat
+            label:          Pinnacle  Systems PCTV Sat receiver
+            driver:         pinsys
+            lircd_conf:     pinnacle_systems/lircd.conf.pctv
+            device:         run_select_tty
+            supports:       bundled
+
+        pctv_pro: &pctv_pro
+            label:          Pinnacle Systems PCTV (pro) receiver
+            driver:         pinsys
+            lircd_conf:     pinnacle_systems/lircd.conf.pctv
+            device:         run_select_tty
+            supports:       bundled
+
+        pixelview_pak_lenco: &pixelview_pak_lenco
+            label:          Lenco  MXTV-9578 CP (card=50)
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        pixelview_mpeg2: &pixelview_mpeg2
+            label:          Pixelview PlayTV MPEG2
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        pixelview_pro_37: &pixelview_pro_37
+            label:          Pixelview PlayTV pro (card=37)
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        pixelview_bt878: &pixelview_bt878
+            label:          Pixelview  PV-BT878P+4E (card=50)
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        pixelview_pv: &pixelview_pv
+            label:          Prolink AProlink Pixelview PV-BT878P+ (Rev.4C,8E, card=70)
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        pixelview_pak: &pixelview_pak
+            label:          Prolink  PV-BT878P+4E (card=50)
+            lircd_conf:     pixelview/lircd.conf.playtv_pro
+            lircmd_conf:    pixelview/lircmd.conf.playtv_pro
+            modules:        [lirc_dev, lirc_gpio]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+
+        provideo: &provideo
+            label:          ProVideo  PV951 (card=42)
+            modules:        [lirc_dev, lirc_i2c]
+            lircd_conf:     provideo/lircd.conf.pv951
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        realmagic: &realmagic
+            label:          REALmagic (bundled with Hollywood Plus DVD card)
+            driver:         pixelview
+            lircd_conf:     sigma_designs/lircd.conf.realmagic
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        remotemaster: &remotemaster
+            label:          PixelView RemoteMaster RC2000/RC3000
+            driver:         pixelview
+            lircd_conf:     pixelview/lircd.conf.remotemaster
+            lircmd_conf:    pixelview/lircmd.conf.remotemaster
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        sa1100_hp: &sa1100_hp
+            label:          HP  iPAQ
+            lircd_conf:     run_select_any_config
+            modules:        [lirc_dev, lirc_sir]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        sa1100_sharp: &sa1100_sharp
+            label:          Sharp Zaurus
+            lircd_conf:     run_select_any_config
+            modules:        [lirc_dev, lirc_sir]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        samsung: &samsung
+            label:          Samsung  USB IR Receiver
+            lircd_conf:     samsung/lircd.conf.samsung
+            driver:         samsung
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+
+        sasem_dign: &sasem_dign
+            label:          Dign HV5 HTPC IR/VFD Module
+            lircd_conf:     sasem/lircd.conf.sasem
+            modules:        [irc_dev, lirc_sasem]
+            supports:       bundled
+
+        sasem: &sasem
+            label:          Sasem  OnAir Remocon-V
+            lircd_conf:     sasem/lircd.conf.sasem
+            modules:        [lirc_dev, lirc_sasem]
+            device:         /dev/lirc0
+            supports:       bundled
+
+        sb0540: &sb0540
+            label:          Creative USB IR Receiver (SB0540
+            lircd_conf:     creative/lircd.conf.alsa_usb
+            driver:         sb0450
+            device:         /dev/usb/hiddev0
+            supports:       bundled
+
+        silitek: &silitek
+            label:          Silitek  SM-1000
+            driver:         silitek
+            lircd_conf:     silitek/lircd.conf.silitek
+            lircmd_conf:    silitek/lircmd.conf.silitek
+            device:         run_select_tty tty1
+            supports:       bundled
+
+        sir: &sir
+            label:          SIR  IrDA (built-in IR ports)
+            lircd_conf:     run_select_any_config
+            modules:        [lirc_dev, lirc_sir]
+            modinit:        run_select_module_tty com3 lirc_sir
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        snapstream: &snapstream
+            label:          Snapstream  Firefly
+            lirc_config:    atiusb/lircd.conf.atiusb
+            modules:        [lirc_dev, lirc_atiusb]
+            driver:         default
+            device:         run_select_usb_tty
+            supports:       bundled
+
+        sonyir: &sonyir
+            label:          Sony PCVA-IR5U IR Receiver
+            lircd_config:   run_select_any_config
+            driver:         sonyir
+            device:         /dev/usb/hiddev0
+            supports:       RM-GP4U RM-RM-U304 RMT-B104A RM-Y1004 RM-YD025
+
+        srm7500libusb: &srm7500libusb
+            label:          Philips  7500 RF remote
+            lircd_conf:     philips/lircd.conf.srm7500libusb
+            driver:         srm7500libusb
+            device:         run_select_usb_tty
+            supports:       bundled
+
+        tekram: &tekram
+            label:          Tekram  Irmate 210 (16x50 UART compatible serial port)
+            lircd_conf:     run_select_any_config
+            modules:        [lirc_dev, lirc_sir]
+            modinit:        run_select_module_tty com1 lirc_sir
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        tekram_bt829: &tekram_bt829
+            label:          Tekram   M230 Mach64 (and others bt829 based)
+            modules:        [lirc_dev, lirc_bt829]
+            modinit:        run_select_module_tty com1 lirc_bt829
+            lircd_conf:     tekram/lircd.conf.m230
+            lircmd_conf:    tekram/lircmd.conf.m230
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        tira: &tira
+            label:          Home  Electronics Tira USB device
+            lircd_conf:     run_select_any_config
+            driver:         tira
+            device:         run_select_usb_tty ttyUSB1
+            supports:       any
+
+        tira_raw: &tira_raw
+            label:          Home  Electronics Tira USB device (timing mode)
+            lircd_conf:     run_select_any_config
+            driver:         tira_raw
+            device:         run_select_usb_tty ttyUSB1
+            supports:       any
+
+        ttusbir: &ttusbir
+            label:          TechnoTrend Trend USB IR receiver
+            lircd_conf:     run_select_any_config
+            modules:        [lirc_dev, lirc_ttusbir]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+        tvbox: &tvbox
+            label:          Asus  TV-Box
+            lircd_conf:     asus/lircd.conf.asus
+            modules:        [lirc_dev, lirc_i2c]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       bundled
+
+        udp: &udp
+            label:          Generic device getting keypresses from network UDP port
+            driver:         udp
+            device:         run_select_port
+            lircd_conf:     run_select_any_config
+            supports:       any
+
+        uirt2: &uirt2
+            label:          UIRT2  (receive only, UIR mode)
+            driver:         uirt2
+            device:         run_select_tty tty1
+            lircd_conf:     run_select_any_config
+            supports:       >
+                            any, but config file receiver specific, no transmit
+                            capability.
+
+        uirt2_raw: &uirt2_raw
+            label:          UIRT2  (receive and transmit)
+            driver:         uirt2_raw
+            device:         run_select_tty tty1
+            lircd_conf:     run_select_any_config
+            supports:       any
+
+        usbx: &usbx
+            label:          ADSTech  USBX-707 USB IR Blaster
+            lircd_conf:     adstech/lircd.conf.usbx-707
+            device:         run_select_usb_tty ttyUSB1
+            driver:         usbx
+            supports:       bundled
+            product_id:     f857
+
+        usb_uirt_raw: &usb_uirt_raw
+            label:          USB-UIRT
+            lircd_conf:     run_select_any_config
+            driver:         usb_uirt_raw
+            device:         run_select_usb_tty
+            supports:       any
+
+        wpc8769l: &wpc8769l
+            label:          Winbond
+            lircd_conf:     acer/lircd.conf.Aspire_6530G
+            modules:        [lirc_dev, lirc_wpc87691]
+            driver:         default
+            device:         /dev/lirc0
+            supports:       any
+
+
+#       xaudio:
+#          label: Sound Blaster Extigy USB sound card (exaudio)
+#          driver: exaudio
+
+
+        zotac: &zotac
+            label:          Zotac USB IR Receiver
+            lircd_config:   zotac/lircd.conf.zotac
+            driver:         zotac
+            device:         run_select_tty
+            supports:       bundled
+
+
+    #-----------------------------------------------------------------------------------
+    main_menu:
+      label: Main menu
+      submenus:
+        driver_select:
+            label:          Driver selection main menu
+            order_hint:  "1"
+            submenus:
+                devinput:
+                    label:          devinput (i. e., devices seen by ir-keytable(1))
+                    device:         run_select_event_device
+                    order_hint:     "1"
+                home_brew:
+                    label:          Home-brew serial and parallel devices
+                    order_hint:     "9"
+                    submenus:
+                        home_brew_serial: *home_brew_serial
+                        home_brew_parallel: *home_brew_parallel
+
+                soundcard:
+                    order_hint:     "8"
+                    label:          Home-brew (soundcard input)
+                    submenus:
+                      dsp: *dsp
+                      audio: *audio
+                      audio_alsa: *audio_alsa
+
+                other:
+                    order_hint:     "5"
+                    label:          Other (MIDI, Bluetooth,  etc.)
+                    submenus:
+                      ea65: *ea65
+                      livedrive_midi: *livedrive_midi
+                      livedrive_seq: *livedrive_seq
+                      creative_infracd: *creative_infracd
+                      bte: *bte
+                      i2cuser: *i2cuser
+
+                other_serial:
+                    label:          Other serial devices
+                    order_hint:     "3"
+                    submenus:
+                      animax: *animax
+                      caraca: *caraca
+                      creative: *creative
+                      irdeo: *irdeo
+                      irdeo_remote: *irdeo_remote
+                      irman: *irman
+                      accent: *accent
+                      nslu2: *nslu2
+                      logitech: *logitech
+                      pcmak: *pcmak
+                      pctv_miro: *pctv_miro
+                      packard_bell: *packard_bell
+                      pctv: *pctv
+                      remotemaster: *remotemaster
+                      realmagic: *realmagic
+                      silitek: *silitek
+                      tekram: *tekram
+                      uirt2: *uirt2
+                      uirt2_raw: *uirt2_raw
+                      mouseremote: *mouseremote
+                      mouseremote_ps2: *mouseremote_ps2
+                      mp3anywhere: *mp3anywhere
+                tv_card:
+                    label:          TV card devices
+                    order_hint:     "4"
+                    submenus:
+                      adaptec: *adaptec
+                      cph03x_askey: *cph03x_askey
+                      cph06x_askey: *cph06x_askey
+                      tvbox: *tvbox
+                      avermedia: *avermedia
+                      avermedia98: *avermedia98
+                      avermedia_vdomate: *avermedia_vdomate
+                      bestbuy: *bestbuy
+                      bestbuy2: *bestbuy2
+                      chronos: *chronos
+                      breakoutbox: *breakoutbox
+                      cph03x_trifan: *cph03x_trifan
+                      flyvideo_2: *flyvideo_2
+                      flyvideo_98: *flyvideo_98
+                      flyvideo_98FM: *flyvideo_98FM
+                      flyvideo_FM_card36: *flyvideo_FM_card36
+                      hauppauge: *hauppauge
+                      hauppauge_hvr1300: *hauppauge_hvr1300
+                      hauppauge_dvb: *hauppauge_dvb
+                      hercules_smarttv_stereo: *hercules_smarttv_stereo
+                      gvbctv5pci: *gvbctv5pci
+                      kworld: *kworld
+                      knc_one: *knc_one
+                      pixelview_pak: *pixelview_pak
+                      pctv_sat: *pctv_sat
+                      cph06x_phoebe: *cph06x_phoebe
+                      pctv_pro: *pctv_pro
+                      pixelview_mpeg2: *pixelview_mpeg2
+                      pixelview_pak: *pixelview_pak
+#                     pixelview_pro: *pixelview_pro
+                      pixelview_bt878: *pixelview_bt878
+                      pixelview_pv: *pixelview_pv
+                      pixelview_pak: *pixelview_pak
+                      pixelview_pro_37: *pixelview_pro_37
+                      provideo: *provideo
+                      sonyir: *sonyir
+                      mediafocusI: *mediafocusI
+                      tekram_bt829: *tekram_bt829
+                      cph03x_trifan: *cph03x_trifan
+                      cph06x_tview: *cph06x_tview
+                      knc_one: *knc_one
+                      leadtek_pvr2000: *leadtek_pvr2000
+                      leadtek_0010: *leadtek_0010
+                      leadtek_0007: *leadtek_0007
+
+                irda:
+                    label:          IRDA/CIR hardware
+                    order_hint:     "5"
+                    submenus:
+                      act200l: *act200l
+                      act220l: *act220l
+                      sir: *sir
+                      tekram: *tekram
+                      wpc8769l: *wpc8769l
+
+                pda:
+                    order_hint:     "5"
+                    label:          PDAs
+                    submenus:
+                      sa1100_hp: *sa1100_hp
+                      sa1100_sharp: *sa1100_sharp
+
+                usb:
+                    label:          USB Devices
+                    order_hint:     "2"
+                    submenus:
+                      usbx: *usbx
+                      macmini: *macmini
+                      asusdh: *asusdh
+                      atiusb: *atiusb
+                      atilibusb: *atilibusb
+                      atwf83: *atwf83
+                      awlibusb: *awlibusb
+                      sb0540: *sb0540
+                      commandir: *commandir
+                      dfclibusb: *dfclibusb
+                      sasem: *sasem
+                      dvico: *dvico
+                      ftdi: *ftdi
+                      tira: *tira
+                      tira_raw: *tira_raw
+                      igorplugusb: *igorplugusb
+                      iguanaIR: *iguanaIR
+                      irlink: *irlink
+                      pcmak_usb: *pcmak_usb
+                      srm7500libusb: *srm7500libusb
+                      bw6130: *bw6130
+                      samsung: *samsung
+                      sasem: *sasem
+                      snapstream: *snapstream
+#                     exaudio:
+#                     label:
+#                     driver:
+                      alsa_usb: *alsa_usb
+                      imon_24g: *imon_24g
+                      imon: *imon
+                      imon_lcd: *imon_lcd
+                      imon_pad: *imon_pad
+                      imon_rsc: *imon_rsc
+                      ttusbir: *ttusbir
+                      usb_uirt_raw: *usb_uirt_raw
+                      mplay_blast: *mplay_blast
+                      mplay_mini: *mplay_mini
+                      zotac: *zotac
+                      udp: *udp
+                      none: *none
+
+        display_configuration:
+            label: "View configuration."
+            order_hint: "2"
+            menu_action: view_config
+
+        check_configuration:
+            label: "Check if configuration is sane."
+            order_hint: "3"
+            menu_action: check_config
+
+        exit_and_save:
+            label: "Save configuration and exit."
+            order_hint: "4"
+            menu_action: save_and_exit
+
+        quit:
+            label: "Exit without saving configuration"
+            order_hint: "5"
+            menu_action: quit
+

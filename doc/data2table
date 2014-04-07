@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+''' Create the lirc Supported Devices Table using data in hardware.yaml '''
+
+import sys
+import yaml
+
+
+FOOTER_PATH = '../doc/html-source/foot.html'
+HEADER_PATH = '../doc/html-source/head.html'
+YAML_PATH = '../hardware.yaml'
+
+_TEMPLATE = '''
+@TABLE_HEAD@
+<table border="1">
+    <tr>
+        <th>Hardware</th>
+        <th>Required LIRC kernel modules</th>
+        <th>lircd driver</th>
+        <th>Default lircd and lircmd config files</th>
+        <th>Supported remotes</th>
+   </tr>"
+@TABLE_ROWS@
+</table>
+@TABLE_FOOT@
+'''
+
+def _add_submenu(menu, menukey):
+    ''' Return all entries for a submenu as a string of html table rows. '''
+
+    def getit(remote, what, _default='&nbsp'):
+        ''' Get an item from  a remote, using default if not existing. '''
+        try:
+            return menu['submenus'][remote][what]
+        except KeyError:
+            return _default
+
+    s = '<tr><th colspan="5"><a name="%s">'  %  menukey
+    s += menu['label'] + '</a></th></tr> '
+    try:
+        children = menu['submenus'].keys()
+    except KeyError:
+        return ""
+    for remote in sorted(children, key=lambda r: getit(r, 'label', '')):
+        s += '<tr>'
+        s += '<td>' +  getit(remote, 'label') + '</td>'
+        s += '<td>' + ' '.join(getit(remote, 'modules', ['&nbsp'])) + '</td>'
+        s += '<td>' + getit(remote, 'driver') + '</td>'
+        s += '<td>'
+        s += getit(remote, 'lircd_conf') + ' ' + getit(remote, 'lircmd_conf')
+        s += '</td>'
+        s += '<td>' + getit(remote, 'supports') + '</td>'
+    return s
+
+if len(sys.argv) == 2:
+    yaml_path = sys.argv[1]
+elif len(sys.argv) == 1:
+    yaml_path = YAML_PATH
+else:
+    print("Usage: data2table [hardware.yaml path]")
+    sys.exit(1)
+
+template = _TEMPLATE
+with open(FOOTER_PATH) as f:
+    template = template.replace('@TABLE_FOOT@', f.read())
+with open(HEADER_PATH) as f:
+    template = template.replace('@TABLE_HEAD@', f.read())
+with open(yaml_path) as f:
+    hardware = yaml.load(f.read())
+
+text = ''
+start_menu = hardware['lirc']['main_menu']['submenus']['driver_select']
+for key, submenu in start_menu['submenus'].items():
+    if 'submenus' not in submenu:
+        continue
+    text += '<tr><th colspan="5"><a href="#%s">%s</a></th></tr>' % \
+        (key, submenu['label'])
+text += '<tr><th colspan="5"><hr></th></tr>'
+for key, submenu in start_menu['submenus'].items():
+    text += _add_submenu(submenu, key)
+
+template = template.replace('@TABLE_ROWS@', text)
+print(template)
