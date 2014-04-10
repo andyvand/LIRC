@@ -25,7 +25,7 @@ if test "$HELP2MAN" != ok; then
 fi
 AC_PROG_LN_S
 LT_INIT([disable-static])
-AM_PATH_PYTHON(,, [:])
+AM_PATH_PYTHON([3.3])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != ""])
 LIBUSB_CONFIG="pkg-config libusb"
 

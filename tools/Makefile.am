@@ -44,17 +44,7 @@ xmode2_LDADD =  @X_LIBS@ @X_PRE_LIBS@ -lX11 @X_EXTRA_LIBS@
 
 lircrcd_SOURCES = lircrcd.c
 
-
 if HAVE_PYTHON
-bin_SCRIPTS = pronto2lirc
+dist_bin_SCRIPTS = pronto2lirc
 dist_sbin_SCRIPTS = lirc-config-tool lirc-setup
-
-pronto2lirc: $(srcdir)/pronto2lirc.py
-	echo "#! ${PYTHON}" >$@
-	cat $< >>$@
-	chmod +x $@
 endif
-
-EXTRA_DIST = pronto2lirc.py
-
-CLEANFILES = *~ pronto2lirc
