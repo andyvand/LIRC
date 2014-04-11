@@ -15,7 +15,7 @@ if SYSTEMD_INSTALL
     SYSTEMD_DIR = systemd
 endif
 
-SUBDIRS = daemons tools doc $(SYSTEMD_DIR)
+SUBDIRS = lib daemons tools doc $(SYSTEMD_DIR)
 
 
 lirc_confdir        = $(sysconfdir)/lirc

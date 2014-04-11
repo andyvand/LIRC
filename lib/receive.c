@@ -14,11 +14,11 @@
 #endif
 
 #include <limits.h>
+#include <errno.h>
 
-#include "hardware.h"
-#include "lircd.h"
-#include "receive.h"
-#include "lirc_log.h"
+#include "lirc/hardware.h"
+#include "lirc/lirc_log.h"
+#include "lirc/receive.h"
 
 extern struct hardware hw;
 extern struct ir_remote *last_remote;
@@ -93,6 +93,44 @@ static lirc_t get_next_rec_buffer_internal(lirc_t maxusec)
 	}
 	return (0);
 }
+
+int waitfordata(__u32 maxusec)
+{
+	fd_set fds;
+	int ret;
+	struct timeval tv;
+
+	while (1) {
+		FD_ZERO(&fds);
+		FD_SET(hw.fd, &fds);
+		do {
+			do {
+				if (maxusec > 0) {
+					tv.tv_sec = maxusec / 1000000;
+					tv.tv_usec = maxusec % 1000000;
+					ret = select(hw.fd + 1, &fds, NULL, NULL, &tv);
+					if (ret == 0)
+						return (0);
+				} else {
+					ret = select(hw.fd + 1, &fds, NULL, NULL, NULL);
+				}
+			}
+			while (ret == -1 && errno == EINTR);
+			if (ret == -1) {
+				logprintf(LOG_ERR, "select() failed\n");
+				logperror(LOG_ERR, NULL);
+				continue;
+			}
+		}
+		while (ret == -1);
+
+		if (FD_ISSET(hw.fd, &fds)) {
+			/* we will read later */
+			return (1);
+		}
+	}
+}
+
 
 lirc_t get_next_rec_buffer(lirc_t maxusec)
 {
