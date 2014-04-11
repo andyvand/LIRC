@@ -46,10 +46,10 @@ typedef int64_t  __s64;
 typedef uint64_t __u64;
 #endif
 
+#include "lirc/ir_remote.h"
 #include "lirc/lirc_options.h"
 
 #define CLICK_DELAY 50000	/* usecs */
-#define PACKET_SIZE 256
 #define WHITE_SPACE " \t"
 #define ALL ((char *) (-1))
 #define CIRCLE 10
@@ -149,7 +149,6 @@ struct state_mouse new_ms, ms = {
 	{button_up, button_up, button_up}
 };
 
-#define progname   "lircmd"
 
 static const char *syslogident = "lircmd-" VERSION;
 const char *configfile = NULL;
@@ -777,6 +776,7 @@ static void lircmd_parse_options(int argc, char** argv)
 	const char* const optstring = "hvnO"
 #       endif
 
+	progname = "lircmd";
 	lircmd_add_defaults();
 	optind = 1;
 	while ((c = getopt_long(argc, argv, optstring, lircmd_options, NULL))
