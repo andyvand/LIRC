@@ -16,6 +16,7 @@
 #include <limits.h>
 #include <errno.h>
 
+#include "include/media/lirc.h"
 #include "lirc/hardware.h"
 #include "lirc/lirc_log.h"
 #include "lirc/receive.h"
