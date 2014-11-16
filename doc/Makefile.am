@@ -59,7 +59,7 @@ dist_image_DATA         = images/atwf83.jpg \
 all: $(nodist_man_MANS) $(nodist_html_DATA)
 
 install-data-hook:
-	$(SED) -i "s/@version@/$(VERSION)/" $(DESTDIR)$(mandir)/*/*
+	find $(DESTDIR)$(mandir) -name "*lirc*" | xargs $(SED) -i "s/@version@/$(VERSION)/"
 
 clean-local:
 	rm -rf html
