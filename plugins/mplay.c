@@ -35,27 +35,6 @@
  * For key 2 you get 0x4e 0x7e 0x7e ...
  */
 
-
- /* Functions available for logging (see tools/lircrcd.c).
- *
- * NOTE: if compiled without the DEBUG option and with SYSLOG, you cannot
- * control the amount of debug info sent to syslog, even the LOG_DEBUG
- * messages will be logged.
- *
- * void logprintf(int priority, const char *format, ...)
- *     Calls the syslog(3) function.
- *
- * void logperror(int priority, const char *s)
- *    Uses the syslog(3) to print a message followed by the error message
- *    strerror (%m) associated to the present errno.
- *
- * void LOGPRINTF(int priority, const char *format, ...)
- *    Calls logprintf(), but only if compiled with DEBUG option.
- *
- * void LOGPERROR(int priority, const char *s)
- *    Calls logperror(), but only if compiled with DEBUG option.
- */
-
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
@@ -273,8 +252,8 @@ const struct driver hw_mplay2 = {
 const struct driver* hardwares[] = { &hw_mplay, &hw_mplay2, NULL };
 
 /**
- * @return 1 on success, 0 on error.
  * @brief Initialises mplay receiver.
+ * @return 1 on success, 0 on error.
  */
 static int mplay_init_receiver(void)
 {
@@ -282,7 +261,6 @@ static int mplay_init_receiver(void)
 }
 
 /**
- * @return 1 on success, 0 on error.
  * @brief Sends initialisation character to MonCaso 312/320 IR device (helper
  * function for mplay2_init).
  */
@@ -339,8 +317,8 @@ static int mplay2_init_receiver(void)
 }
 
 /**
- * @return   void
  * @brief Cleans up resources used by the listener thread.
+ * @return   void
  */
 static void mplayfamily_listen_cleanup(void* arg)
 {
@@ -348,8 +326,8 @@ static void mplayfamily_listen_cleanup(void* arg)
 }
 
 /**
- * @return 1 on success, 0 on error; errno is set.
  * @brief Sets period for polling loop in listener thread.
+ * @return 1 on success, 0 on error; errno is set.
  */
 static int mplayfamily_set_listener_period(int fd, unsigned int period)
 {
@@ -369,13 +347,6 @@ static int mplayfamily_set_listener_period(int fd, unsigned int period)
 }
 
 /**
- * @return MPLAY_CODE_TURN_LEFT, MPLAY_CODE_TURN_RIGHT, MPLAY_CODE_NOP,
- * MPLAY_CODE_ERROR.
- * @param fd File descriptor of periodic timer.
- * @param[in,out] counter Counter, used to control idle/busy polling phases.
- * @param[in,out] sensor Angle measured by sensor, values 0, 1, 2, 3.
- * @param[in,out] absolute Absolute angle, tracks sensor measurement values.
- * @param[in,out] event Event angle, when turn took place.
  * @brief Gets a wheel action.
  *
  * The function returns a virtual button press if the absolute angle has
@@ -383,6 +354,13 @@ static int mplayfamily_set_listener_period(int fd, unsigned int period)
  * sensor measure values by tracking the turn actions. If a wheel action has
  * taken place, the function re-triggers the busy phase by setting the busy
  * counter to a maximum and reducing the polling period.
+ * @param fd File descriptor of periodic timer.
+ * @param[in,out] counter Counter, used to control idle/busy polling phases.
+ * @param[in,out] sensor Angle measured by sensor, values 0, 1, 2, 3.
+ * @param[in,out] absolute Absolute angle, tracks sensor measurement values.
+ * @param[in,out] event Event angle, when turn took place.
+ * @return MPLAY_CODE_TURN_LEFT, MPLAY_CODE_TURN_RIGHT, MPLAY_CODE_NOP,
+ * MPLAY_CODE_ERROR.
  */
 static unsigned char mplayfamily_get_wheel(
 	int fd, unsigned int *counter,
@@ -936,17 +914,17 @@ char *mplayfamily_rec(struct ir_remote *remotes)
 }
 
 /**
- * @return 1 on success, 0 on error.
- * @return prep Code prefix (zero for this LIRC driver).
- * @return codep Code of keypress.
- * @return postp Trailing code (zero for this LIRC dirver).
- * @return repeat_flagp True if the keypress is a repeated keypress.
- * @return min_remaining_gapp Min estimated time gap remaining before next code.
- * @return max_remaining_gapp Max estimated time gap remaining before next code.
  * @brief This function is called by the LIRC daemon during the transformation
- * of a received code into an lirc event.
+ * of a received code into an lirc event. It gets the global variable code
+ * (remote keypress code).
  *
- * It gets the global variable code (remote keypress code).
+ * @return 1 on success, 0 on error.
+ * @return ctx->prep Code prefix (zero for this LIRC driver).
+ * @return ctx->codep Code of keypress.
+ * @return ctx->postp Trailing code (zero for this LIRC dirver).
+ * @return ctx->repeat_flagp True if the keypress is a repeated keypress.
+ * @return ctx->min_remaining_gapp Min estimated time gap remaining before next code.
+ * @return ctx->max_remaining_gapp Max estimated time gap remaining before next code.
  */
 int mplayfamily_decode(struct ir_remote *remote, struct decode_ctx_t* ctx)
 {
@@ -962,4 +940,3 @@ int mplayfamily_decode(struct ir_remote *remote, struct decode_ctx_t* ctx)
 	ctx->max_remaining_gap = 0;
 	return 1;
 }
-
