@@ -98,7 +98,7 @@ static void parse_options(int argc, char** argv)
 	{
 		switch (c) {
 		case 'h':
-			printf(help);
+			puts(help);
 			exit(EXIT_SUCCESS);
 		case 'H':
 			strncpy(driver, optarg, sizeof(driver) - 1);
@@ -194,11 +194,11 @@ int main(int argc, char **argv)
 			close(fd);
 			exit(EXIT_FAILURE);
 		} else if (ioctl(fd, LIRC_GET_REC_MODE, &mode) == -1) {
-			printf("This program is only intended for receivers"
+			puts("This program is only intended for receivers"
 			       " supporting the pulse/space layer.\n");
-			printf("Note that this is no error, but this program "
+			puts("Note that this is no error, but this program "
 			       "simply makes no sense for your\n" "receiver.\n");
-			printf("In order to test your setup run lircd with "
+			puts("In order to test your setup run lircd with "
 			       "the --nodaemon option and \n then check if the"
 			       " remote works with the irw tool.\n");
 			close(fd);
@@ -213,11 +213,11 @@ int main(int argc, char **argv)
 		mode = curr_driver->rec_mode;
 		if (mode != LIRC_MODE_MODE2) {
 			if (strcmp(curr_driver->name, "default") == 0) {
-				printf("Please use the --raw option to access "
+				puts("Please use the --raw option to access "
 				       "the device directly instead through\n"
 				       "the abstraction layer.\n");
 			} else {
-				printf("This program does not work for this"
+				puts("This program does not work for this"
  				       " hardware yet\n");
 			}
 			exit(EXIT_FAILURE);
@@ -256,15 +256,15 @@ int main(int argc, char **argv)
 						(void *)&data : buffer),
 				      count);
 			if (result != count) {
-				fprintf(stderr, "read() failed\n");
+				fputs("read() failed\n", stderr);
 				break;
 			}
 		} else {
 			if (mode == LIRC_MODE_MODE2) {
 				data = curr_driver->readdata(0);
 				if (data == 0) {
-					fprintf(stderr,
-					        "readdata() failed\n");
+					fputs("readdata() failed\n",
+                                              stderr);
 					break;
 				}
 			} else {
@@ -273,11 +273,11 @@ int main(int argc, char **argv)
 		}
 
 		if (mode != LIRC_MODE_MODE2) {
-			printf("code: 0x");
+			puts("code: 0x");
 			for (i = 0; i < count; i++) {
 				printf("%02x", (unsigned char)buffer[i]);
 			}
-			printf("\n");
+			puts("\n");
 			fflush(stdout);
 			continue;
 		}
@@ -297,19 +297,19 @@ int main(int argc, char **argv)
 			if (data & PULSE_BIT) {
 				if ((bitno & 1) == 0) {
 					/* not in expected order */
-					printf("-pulse");
+					puts("-pulse");
 				}
 			} else {
 				if (bitno & 1) {
 					/* not in expected order */
-					printf("-space");
+					puts("-space");
 				}
 				if (((data & PULSE_MASK) > gap) || (bitno >= 6)) {
 					/* real long space or more
 					   than 6 codes, start new line */
-					printf("\n");
+					puts("\n");
 					if ((data & PULSE_MASK) > gap)
-						printf("\n");
+						puts("\n");
 					bitno = 0;
 				}
 			}
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
 		}
 		case 2:
 			if ((data & PULSE_MASK) > gap)
-				printf("_\n\n_");
+				puts("_\n\n_");
 			else
 				printf("%.*s",
 				       ((data & PULSE_MASK) + t_div/2) / t_div,

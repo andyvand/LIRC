@@ -105,6 +105,8 @@ chk_write(int fd, const void *buf, size_t count, const char* msg)
 		perror(msg);
 	}
 }
+
+
 int lirc_command_init(lirc_cmd_ctx* ctx, const char* fmt, ...)
 {
 	va_list ap;
